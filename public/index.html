@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PM Agent System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>PM Agent System</h1>
+      <p class="subtitle">Multi-Agent Orchestration for PM/PO Workflow</p>
+    </header>
+
+    <main>
+      <!-- Query Input -->
+      <section class="query-section">
+        <label for="query">분석할 주제를 입력하세요</label>
+        <div class="input-group">
+          <input type="text" id="query" placeholder="예: 반도체 장비 시장 동향 분석">
+          <button id="analyzeBtn" onclick="analyze()">분석 시작</button>
+        </div>
+      </section>
+
+      <!-- Progress -->
+      <section id="progress" class="progress-section hidden">
+        <div class="progress-bar">
+          <div class="progress-step" data-step="1">
+            <span class="icon">🔍</span>
+            <span class="label">Input</span>
+          </div>
+          <div class="progress-step" data-step="2">
+            <span class="icon">🧠</span>
+            <span class="label">Analysis</span>
+          </div>
+          <div class="progress-step" data-step="3">
+            <span class="icon">📐</span>
+            <span class="label">Planning</span>
+          </div>
+          <div class="progress-step" data-step="4">
+            <span class="icon">📄</span>
+            <span class="label">Output</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Results -->
+      <section id="results" class="results-section hidden">
+        <div class="tabs">
+          <button class="tab active" data-tab="input">Input</button>
+          <button class="tab" data-tab="analysis">Analysis</button>
+          <button class="tab" data-tab="planning">Planning</button>
+          <button class="tab" data-tab="output">Output</button>
+        </div>
+
+        <div id="tab-content" class="tab-content">
+          <!-- Dynamic content -->
+        </div>
+
+        <!-- Document Generation -->
+        <div id="doc-gen" class="doc-gen hidden">
+          <h3>문서 생성</h3>
+          <div class="doc-buttons">
+            <button onclick="generateDoc('prd')">PRD 생성</button>
+            <button onclick="generateDoc('one-pager')">One-Pager 생성</button>
+            <button onclick="generateDoc('briefing')">Briefing 생성</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
