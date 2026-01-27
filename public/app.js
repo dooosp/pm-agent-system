@@ -1,3 +1,6 @@
+// API 엔드포인트 (Cloudflare Worker)
+const API_BASE = 'https://pm-agent.jangho1383.workers.dev';
+
 let currentSession = null;
 let currentTab = 'input';
 
@@ -14,14 +17,18 @@ async function analyze() {
   setStep(1);
 
   try {
-    const response = await fetch('/api/analyze', {
+    // 단계별 프로그레스 시뮬레이션
+    setTimeout(() => setStep(2), 2000);
+    setTimeout(() => setStep(3), 5000);
+
+    const response = await fetch(`${API_BASE}/api/analyze`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ query })
     });
 
     const data = await response.json();
-    if (!data.success) throw new Error(data.error);
+    if (!data.success) throw new Error(data.error || 'API 오류');
 
     currentSession = data;
     setStep(4);
@@ -86,9 +93,68 @@ function renderTab(tab) {
       break;
   }
 
-  content.textContent = data
-    ? JSON.stringify(data, null, 2)
-    : '데이터 없음';
+  if (data) {
+    content.innerHTML = formatData(tab, data);
+  } else {
+    content.textContent = '데이터 없음';
+  }
+}
+
+// 데이터 포맷팅 (가독성 개선)
+function formatData(tab, data) {
+  if (tab === 'input' && data.items) {
+    return `<div class="formatted">
+      <h4>📊 수집 결과: ${data.items.length}개 뉴스</h4>
+      <ul>${data.items.map(item => `
+        <li>
+          <strong>${item.title}</strong>
+          <span class="tags">${(item.tags || []).map(t => `<span class="tag">${t}</span>`).join('')}</span>
+          <span class="score">관련도: ${(item.relevanceScore * 100).toFixed(0)}%</span>
+        </li>
+      `).join('')}</ul>
+    </div>`;
+  }
+
+  if (tab === 'analysis' && data.problems) {
+    return `<div class="formatted">
+      <h4>🧠 분석된 문제: ${data.problems.length}개</h4>
+      ${data.problems.map(p => `
+        <div class="problem-card">
+          <strong>${p.id}: ${p.problem}</strong>
+          <p><em>근본 원인:</em> ${p.rootCause || 'N/A'}</p>
+          <p><em>긴급도:</em> ${p.impact?.urgency || 'N/A'} | <em>점수:</em> ${p.impact?.score || 'N/A'}/10</p>
+        </div>
+      `).join('')}
+      <h4>💡 인사이트</h4>
+      <ul>${(data.insights || []).map(i => `<li>${i}</li>`).join('')}</ul>
+    </div>`;
+  }
+
+  if (tab === 'planning' && data.initiatives) {
+    return `<div class="formatted">
+      <h4>📐 이니셔티브: ${data.initiatives.length}개</h4>
+      ${data.initiatives.map(i => `
+        <div class="initiative-card ${i.priority}">
+          <strong>${i.priority} | ${i.title}</strong>
+          <p>${i.description || ''}</p>
+          <span class="rice">RICE: ${i.rice?.score || 'N/A'}</span>
+        </div>
+      `).join('')}
+      <h4>🗓 로드맵</h4>
+      <pre>${JSON.stringify(data.roadmap || {}, null, 2)}</pre>
+    </div>`;
+  }
+
+  if (tab === 'output' && data.document) {
+    const doc = data.document;
+    return `<div class="formatted document">
+      <h3>${doc.title || '문서'}</h3>
+      ${doc.executiveSummary ? `<p class="summary">${doc.executiveSummary}</p>` : ''}
+      <pre>${JSON.stringify(doc, null, 2)}</pre>
+    </div>`;
+  }
+
+  return `<pre>${JSON.stringify(data, null, 2)}</pre>`;
 }
 
 // Tab clicks
@@ -100,23 +166,30 @@ document.querySelectorAll('.tab').forEach(tab => {
 async function generateDoc(type) {
   if (!currentSession) return alert('먼저 분석을 실행하세요');
 
+  const btn = event.target;
+  btn.disabled = true;
+  btn.textContent = '생성 중...';
+
   try {
-    const response = await fetch('/api/generate-document', {
+    const response = await fetch(`${API_BASE}/api/generate-document`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        sessionId: currentSession.sessionId,
+        planningResult: currentSession.planningResult,
         documentType: type
       })
     });
 
     const data = await response.json();
-    if (!data.success) throw new Error(data.error);
+    if (data.error) throw new Error(data.error);
 
-    currentSession.outputResult = data.document;
+    currentSession.outputResult = data;
     renderTab('output');
 
   } catch (error) {
     alert('문서 생성 오류: ' + error.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = btn.textContent.replace('생성 중...', type.toUpperCase() + ' 생성');
   }
 }
