@@ -3,7 +3,7 @@ module.exports = {
   PORT: process.env.PORT || 3002,
 
   // Gemini API
-  GEMINI_API_KEY: process.env.GEMINI_API_KEY || '***REMOVED***',
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY,
   GEMINI_MODEL: 'gemini-2.0-flash',
 
   // Agent Settings
