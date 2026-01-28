@@ -4,7 +4,7 @@ module.exports = {
 
   // Gemini API
   GEMINI_API_KEY: process.env.GEMINI_API_KEY,
-  GEMINI_MODEL: 'gemini-2.0-flash',
+  GEMINI_MODEL: 'gemini-3-flash-preview',
 
   // Agent Settings
   agents: {
