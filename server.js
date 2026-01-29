@@ -70,6 +70,9 @@ app.post('/api/generate-document', async (req, res) => {
 });
 
 // Start server
+const apiKey = config.GEMINI_API_KEY || '';
+console.log(`[Config] GEMINI_API_KEY: length=${apiKey.length}, prefix="${apiKey.substring(0, 4)}...", suffix="...${apiKey.slice(-4)}"`);
+
 app.listen(config.PORT, () => {
   console.log(`
 ╔═══════════════════════════════════════════════════╗
