@@ -3,6 +3,7 @@
  * Gemini API를 통한 PM 분석 및 문서 생성
  */
 
+// gemini-3-flash-preview는 Cloudflare Worker 지역 제한으로 사용 불가
 const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 let GEMINI_API_KEY = '';
@@ -16,7 +17,8 @@ const corsHeaders = {
 
 export default {
   async fetch(request, env) {
-    GEMINI_API_KEY = env.GEMINI_API_KEY;
+    GEMINI_API_KEY = String(env.GEMINI_API_KEY || '');
+    console.log('[Init] API key loaded, length:', GEMINI_API_KEY.length);
 
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers: corsHeaders });
@@ -66,6 +68,9 @@ async function callGemini(prompt, systemPrompt = '') {
   });
 
   const data = await response.json();
+  if (data.error) {
+    console.error('[Gemini Error]', JSON.stringify(data.error));
+  }
   return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 }
 

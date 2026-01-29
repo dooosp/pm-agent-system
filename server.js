@@ -4,6 +4,24 @@ const config = require('./config');
 
 const app = express();
 
+// CORS
+const ALLOWED_ORIGINS = [
+  'https://dooosp.github.io',
+  'http://localhost:3002',
+  'http://127.0.0.1:3002'
+];
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (ALLOWED_ORIGINS.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
+});
+
 // Middleware
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -34,13 +52,15 @@ app.post('/api/analyze', async (req, res) => {
 
 app.post('/api/generate-document', async (req, res) => {
   try {
-    const { sessionId, documentType } = req.body;
-    if (!sessionId || !documentType) {
-      return res.status(400).json({ error: 'sessionId and documentType required' });
+    const { sessionId, planningResult, documentType } = req.body;
+    if (!documentType || (!sessionId && !planningResult)) {
+      return res.status(400).json({ error: 'documentType and (sessionId or planningResult) required' });
     }
 
     const pipeline = require('./orchestrator/pipeline');
-    const result = await pipeline.generateDocument(sessionId, documentType);
+    const result = sessionId
+      ? await pipeline.generateDocument(sessionId, documentType)
+      : await pipeline.generateDocumentDirect(planningResult, documentType);
 
     res.json({ success: true, document: result });
   } catch (error) {

@@ -77,6 +77,11 @@ class Pipeline {
     return outputResult;
   }
 
+  async generateDocumentDirect(planningResult, documentType) {
+    console.log(`[Pipeline] Generating ${documentType} document (direct)`);
+    return await outputAgent.execute(planningResult, documentType);
+  }
+
   getSession(sessionId) {
     const session = this.sessions.get(sessionId);
     if (session && Date.now() - new Date(session.createdAt).getTime() > config.session.ttl) {

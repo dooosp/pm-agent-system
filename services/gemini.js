@@ -21,6 +21,10 @@ async function generate(prompt, systemInstruction = '') {
 async function generateJSON(prompt, systemInstruction = '') {
   const response = await generate(prompt, systemInstruction);
 
+  if (!response || response.trim().length === 0) {
+    throw new Error('Gemini가 빈 응답을 반환했습니다. 프롬프트를 확인하세요.');
+  }
+
   // JSON 추출 (마크다운 코드 블록 제거)
   const jsonStr = response
     .replace(/```json\n?/g, '')
@@ -29,11 +33,15 @@ async function generateJSON(prompt, systemInstruction = '') {
 
   // JSON 객체 또는 배열 추출 시도
   const jsonMatch = jsonStr.match(/\{[\s\S]*\}|\[[\s\S]*\]/);
-  if (jsonMatch) {
-    return JSON.parse(jsonMatch[0]);
+  if (!jsonMatch) {
+    throw new Error(`Gemini 응답에서 JSON을 추출할 수 없습니다. 응답 앞 200자: ${jsonStr.substring(0, 200)}`);
   }
 
-  return JSON.parse(jsonStr);
+  try {
+    return JSON.parse(jsonMatch[0]);
+  } catch (e) {
+    throw new Error(`JSON 파싱 실패: ${e.message}. 추출된 문자열 앞 200자: ${jsonMatch[0].substring(0, 200)}`);
+  }
 }
 
 module.exports = { generate, generateJSON };

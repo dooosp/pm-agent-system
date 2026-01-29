@@ -1,5 +1,7 @@
-// API 엔드포인트 (Cloudflare Worker)
-const API_BASE = 'https://pm-agent.jangho1383.workers.dev';
+// API 엔드포인트 (로컬이면 localhost, 아니면 Worker)
+const API_BASE = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+  ? `${location.protocol}//${location.host}`
+  : 'https://pm-agent.jangho1383.workers.dev';
 
 let currentSession = null;
 let currentTab = 'input';
@@ -171,19 +173,22 @@ async function generateDoc(type) {
   btn.textContent = '생성 중...';
 
   try {
+    const body = currentSession.sessionId
+      ? { sessionId: currentSession.sessionId, documentType: type }
+      : { planningResult: currentSession.planningResult, documentType: type };
+
     const response = await fetch(`${API_BASE}/api/generate-document`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        planningResult: currentSession.planningResult,
-        documentType: type
-      })
+      body: JSON.stringify(body)
     });
 
     const data = await response.json();
     if (data.error) throw new Error(data.error);
 
-    currentSession.outputResult = data;
+    // 로컬 서버: { success, document: { documentType, document, ... } }
+    // Worker: { documentType, document, ... }
+    currentSession.outputResult = data.success ? data.document : data;
     renderTab('output');
 
   } catch (error) {
