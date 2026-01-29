@@ -1,7 +1,7 @@
 // API 엔드포인트 (로컬이면 localhost, 아니면 Worker)
 const API_BASE = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
   ? `${location.protocol}//${location.host}`
-  : 'https://pm-agent.jangho1383.workers.dev';
+  : 'https://pm-agent-system.onrender.com';
 
 let currentSession = null;
 let currentTab = 'input';
