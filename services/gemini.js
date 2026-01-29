@@ -27,8 +27,8 @@ async function generateJSON(prompt, systemInstruction = '') {
     .replace(/```\n?/g, '')
     .trim();
 
-  // JSON 객체 추출 시도
-  const jsonMatch = jsonStr.match(/\{[\s\S]*\}/);
+  // JSON 객체 또는 배열 추출 시도
+  const jsonMatch = jsonStr.match(/\{[\s\S]*\}|\[[\s\S]*\]/);
   if (jsonMatch) {
     return JSON.parse(jsonMatch[0]);
   }

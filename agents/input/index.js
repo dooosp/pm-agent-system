@@ -10,9 +10,34 @@ const PERSONA = `
 - 비즈니스 임팩트 없는 정보는 필터링한다
 `;
 
+// 입력 캐시 (query → { value, expiresAt })
+const inputCache = new Map();
+
+function getCached(query) {
+  const key = query.trim().toLowerCase();
+  const entry = inputCache.get(key);
+  if (entry && Date.now() < entry.expiresAt) {
+    return entry.value;
+  }
+  if (entry) inputCache.delete(key);
+  return null;
+}
+
+function setCache(query, value) {
+  const key = query.trim().toLowerCase();
+  inputCache.set(key, { value, expiresAt: Date.now() + config.agents.input.cacheTTL });
+}
+
 async function execute(query) {
   console.log(`\n${PERSONA}`);
   console.log(`[Input Agent] Starting for query: "${query}"`);
+
+  // 캐시 확인
+  const cached = getCached(query);
+  if (cached) {
+    console.log('[Input Agent] Cache hit, returning cached result');
+    return cached;
+  }
 
   const startTime = Date.now();
 
@@ -63,6 +88,7 @@ async function execute(query) {
   };
 
   console.log(`[Input Agent] Complete in ${result.processingTime}ms`);
+  setCache(query, result);
   return result;
 }
 

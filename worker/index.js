@@ -3,8 +3,9 @@
  * Gemini API를 통한 PM 분석 및 문서 생성
  */
 
-const GEMINI_API_KEY = '***REMOVED***';
 const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+
+let GEMINI_API_KEY = '';
 
 // CORS 헤더
 const corsHeaders = {
@@ -15,6 +16,8 @@ const corsHeaders = {
 
 export default {
   async fetch(request, env) {
+    GEMINI_API_KEY = env.GEMINI_API_KEY;
+
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers: corsHeaders });
     }

@@ -60,7 +60,7 @@ async function execute(inputResult) {
       totalProblems: analyses.length,
       criticalCount: analyses.filter(a => a.impact.urgency === 'critical').length,
       avgImpactScore: Math.round(
-        analyses.reduce((sum, a) => sum + (a.impact.overallScore || 5), 0) / analyses.length
+        analyses.reduce((sum, a) => sum + (a.impact.overallScore || 5), 0) / Math.max(analyses.length, 1)
       )
     }
   };
