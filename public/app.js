@@ -48,6 +48,7 @@ async function analyze() {
 
 // Progress
 function showProgress() {
+  document.getElementById('feature-preview').classList.add('hidden');
   document.getElementById('progress').classList.remove('hidden');
   document.getElementById('results').classList.add('hidden');
 }
