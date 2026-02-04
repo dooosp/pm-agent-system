@@ -1,9 +1,9 @@
 # PM Agent System - Implementation Plan
 
-> **Status**: ✅ 구현 완료
+> **Status**: ✅ 100% 완료
 > **Author**: Claude Code (Staff Engineer)
 > **Date**: 2026-01-27
-> **Completed**: 2026-01-27
+> **Completed**: 2026-02-04
 
 ---
 
@@ -485,12 +485,19 @@ Response: { full session data }
 
 ---
 
-## 10. Future Enhancements (C안: 포트폴리오 데모)
+## 10. Production Enhancements (✅ Completed)
 
-1. **데모 모드**: 실제 API 호출 없이 샘플 데이터로 시연
-2. **export 기능**: PDF, Notion, Confluence 내보내기
-3. **시각화**: 차트/다이어그램 자동 생성 (Mermaid)
-4. **다국어**: 영어 PRD 생성 지원
+1. ✅ **데모 모드**: GET /api/demo — 샘플 데이터로 즉시 시연
+2. ✅ **Markdown Export**: GET /api/export/:sessionId — PRD/One-Pager/Briefing → .md 다운로드
+3. ✅ **API 재시도**: Gemini 429/5xx → 3회 exponential backoff
+4. ✅ **Rate Limiting**: IP당 분당 10회 제한
+5. ✅ **세션 영속화**: data/sessions/*.json 파일 기반
+
+### Future (미구현)
+- PDF Export (puppeteer/chrome)
+- Notion/Confluence 연동
+- 차트/다이어그램 (Mermaid)
+- 다국어 PRD 생성
 
 ---
 
@@ -505,7 +512,7 @@ Response: { full session data }
 
 ## 12. Implementation Summary
 
-**구현 완료**: 2026-01-27
+**구현 완료**: 2026-02-04
 
 | Phase | 상태 | 파일 수 |
 |-------|------|---------|
@@ -515,6 +522,7 @@ Response: { full session data }
 | D. Planning Agent | ✅ 완료 | 4 |
 | E. Output Agent | ✅ 완료 | 4 |
 | F. 통합 | ✅ 완료 | - |
+| G. Export + Demo + 안정화 | ✅ 완료 | 3 |
 
 **총 파일 수**: 23개 (node_modules 제외)
 
