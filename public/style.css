@@ -450,3 +450,25 @@ header h1 {
     font-size: 0.8rem;
   }
 }
+
+/* Export */
+.export-bar {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.export-btn {
+  padding: 10px 24px;
+  border: 1px solid #4ade80;
+  background: transparent;
+  color: #4ade80;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background 0.2s, color 0.2s;
+}
+
+.export-btn:hover {
+  background: #4ade80;
+  color: #1a1a2e;
+}

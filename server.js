@@ -69,6 +69,31 @@ app.post('/api/generate-document', async (req, res) => {
   }
 });
 
+// Markdown Export
+app.get('/api/export/:sessionId', (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    const pipeline = require('./orchestrator/pipeline');
+    const { toMarkdown } = require('./services/markdown-exporter');
+
+    const session = pipeline.getSession(sessionId);
+    if (!session || !session.outputResult) {
+      return res.status(404).json({ error: 'Session not found or no document generated' });
+    }
+
+    const { documentType, document } = session.outputResult;
+    const md = toMarkdown(documentType, document);
+    const filename = `${documentType}-${sessionId}.md`;
+
+    res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.send(md);
+  } catch (error) {
+    console.error('Export error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Start server
 const apiKey = config.GEMINI_API_KEY || '';
 console.log(`[Config] GEMINI_API_KEY: length=${apiKey.length}, prefix="${apiKey.substring(0, 4)}...", suffix="...${apiKey.slice(-4)}"`);

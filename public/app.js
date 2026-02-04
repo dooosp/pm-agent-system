@@ -192,10 +192,22 @@ async function generateDoc(type) { // eslint-disable-line no-unused-vars
     currentSession.outputResult = data.success ? data.document : data;
     renderTab('output');
 
+    // Export 버튼 표시
+    const exportBar = document.getElementById('export-bar');
+    if (exportBar) exportBar.classList.remove('hidden');
+
   } catch (error) {
     alert('문서 생성 오류: ' + error.message);
   } finally {
     btn.disabled = false;
     btn.textContent = btn.textContent.replace('생성 중...', type.toUpperCase() + ' 생성');
   }
+}
+
+// Markdown Export
+function exportMarkdown() { // eslint-disable-line no-unused-vars
+  if (!currentSession?.sessionId) return alert('먼저 분석 후 문서를 생성하세요');
+  if (!currentSession?.outputResult) return alert('먼저 문서를 생성하세요');
+
+  window.open(`${API_BASE}/api/export/${currentSession.sessionId}`, '_blank');
 }
