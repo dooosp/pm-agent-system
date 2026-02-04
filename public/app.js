@@ -204,6 +204,30 @@ async function generateDoc(type) { // eslint-disable-line no-unused-vars
   }
 }
 
+// Demo Mode
+async function loadDemo() { // eslint-disable-line no-unused-vars
+  const btn = document.querySelector('.demo-btn');
+  btn.disabled = true;
+  btn.textContent = 'Loading...';
+
+  try {
+    const response = await fetch(`${API_BASE}/api/demo`);
+    const data = await response.json();
+    if (!data.success) throw new Error(data.error || 'Demo load failed');
+
+    currentSession = data;
+    document.getElementById('query').value = data.query;
+    document.getElementById('feature-preview').classList.add('hidden');
+    showResults();
+    renderTab('input');
+  } catch (error) {
+    alert('Demo load error: ' + error.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Demo';
+  }
+}
+
 // Markdown Export
 function exportMarkdown() { // eslint-disable-line no-unused-vars
   if (!currentSession?.sessionId) return alert('먼저 분석 후 문서를 생성하세요');

@@ -92,6 +92,28 @@ app.post('/api/generate-document', async (req, res) => {
   }
 });
 
+// Demo Mode
+app.get('/api/demo', (req, res) => {
+  try {
+    const demoData = require('./data/demo-preset.json');
+    const pipeline = require('./orchestrator/pipeline');
+    const sessionId = 'demo-' + Date.now().toString(36);
+
+    const session = {
+      id: sessionId,
+      ...demoData,
+      createdAt: new Date().toISOString(),
+      outputResult: null
+    };
+
+    pipeline.sessions.set(sessionId, session);
+    res.json({ success: true, sessionId, ...session });
+  } catch (error) {
+    console.error('Demo error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Markdown Export
 app.get('/api/export/:sessionId', (req, res) => {
   try {

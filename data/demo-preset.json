@@ -1,0 +1,228 @@
+{
+  "query": "SaaS 고객 이탈률 증가 원인 분석",
+  "inputResult": {
+    "query": "SaaS 고객 이탈률 증가 원인 분석",
+    "collectedAt": "2026-02-04T09:00:00Z",
+    "items": [
+      {
+        "title": "SaaS 기업 평균 이탈률 5.6%로 상승, 경기침체 영향",
+        "source": "TechCrunch Korea",
+        "url": "#demo",
+        "content": "2026년 1분기 SaaS 기업들의 평균 고객 이탈률이 전년 대비 1.2%p 상승한 5.6%를 기록했다. 경기침체로 인한 비용 절감 압력이 주요 원인으로 분석된다.",
+        "tags": ["market_trend", "churn"],
+        "relevanceScore": 0.92
+      },
+      {
+        "title": "온보딩 경험이 SaaS 이탈률의 40%를 결정",
+        "source": "Product Coalition",
+        "url": "#demo",
+        "content": "Gainsight 조사에 따르면 첫 30일 내 핵심 기능 미사용 고객의 이탈 확률이 3배 높다.",
+        "tags": ["user_experience", "onboarding"],
+        "relevanceScore": 0.88
+      },
+      {
+        "title": "B2B SaaS 가격 인상 후 이탈률 급증 사례 분석",
+        "source": "SaaStr",
+        "url": "#demo",
+        "content": "Notion, Figma 등 주요 SaaS의 가격 인상 후 SMB 고객 이탈이 15-25% 증가했다.",
+        "tags": ["pricing", "competitor"],
+        "relevanceScore": 0.85
+      },
+      {
+        "title": "고객 성공팀 투자와 NRR 상관관계 연구",
+        "source": "Harvard Business Review",
+        "url": "#demo",
+        "content": "CS팀 1인당 관리 고객 수가 50명 이하일 때 NRR이 120% 이상을 유지하는 것으로 나타났다.",
+        "tags": ["customer_success", "retention"],
+        "relevanceScore": 0.82
+      },
+      {
+        "title": "AI 기반 이탈 예측 모델로 이탈률 30% 감소 사례",
+        "source": "MIT Technology Review",
+        "url": "#demo",
+        "content": "머신러닝 기반 이탈 예측 시스템을 도입한 SaaS 기업들이 평균 30%의 이탈률 감소를 달성했다.",
+        "tags": ["technology", "ai"],
+        "relevanceScore": 0.79
+      }
+    ],
+    "summary": {
+      "total": 12,
+      "filtered": 5,
+      "byTag": {
+        "market_trend": 1,
+        "user_experience": 1,
+        "pricing": 1,
+        "customer_success": 1,
+        "technology": 1
+      }
+    }
+  },
+  "analysisResult": {
+    "query": "SaaS 고객 이탈률 증가 원인 분석",
+    "analyzedAt": "2026-02-04T09:01:00Z",
+    "processingTime": 3200,
+    "problems": [
+      {
+        "id": "P1",
+        "problem": "온보딩 완료율 저조로 인한 초기 이탈 증가",
+        "rootCause": "첫 30일 내 핵심 기능 활성화율이 35%에 불과",
+        "impact": {
+          "urgency": "High",
+          "score": 9,
+          "revenue": "월 ARR의 8% 손실 추정"
+        }
+      },
+      {
+        "id": "P2",
+        "problem": "가격 대비 가치 인식 저하",
+        "rootCause": "최근 가격 인상 후 SMB 고객의 ROI 체감 하락",
+        "impact": {
+          "urgency": "High",
+          "score": 8,
+          "revenue": "SMB 세그먼트 이탈률 15% 증가"
+        }
+      },
+      {
+        "id": "P3",
+        "problem": "CS팀 대응 지연으로 인한 고객 불만족",
+        "rootCause": "CS 인력 대비 고객 수 비율(1:120)이 업계 평균(1:50)의 2.4배",
+        "impact": {
+          "urgency": "Medium",
+          "score": 7,
+          "revenue": "Enterprise 고객 3건 이탈 리스크"
+        }
+      }
+    ],
+    "insights": [
+      "온보딩 최적화가 가장 높은 ROI를 가진 이탈 방지 전략",
+      "가격 인상은 가치 증명 없이 단행하면 SMB 이탈 가속화",
+      "AI 기반 이탈 예측 시스템 도입으로 선제 대응 가능",
+      "CS팀 인력 확충보다 자동화 도구 도입이 비용 효율적"
+    ]
+  },
+  "planningResult": {
+    "query": "SaaS 고객 이탈률 증가 원인 분석",
+    "plannedAt": "2026-02-04T09:02:00Z",
+    "processingTime": 4100,
+    "objectives": {
+      "objectives": [
+        {
+          "id": "O1",
+          "description": "Q2까지 월간 이탈률을 5.6%에서 3.5%로 감소",
+          "timeframe": "Q2 2026",
+          "keyResults": [
+            {
+              "id": "KR1.1",
+              "description": "온보딩 30일 내 핵심 기능 활성화율 35%→70%",
+              "metric": "Feature Activation Rate",
+              "target": "70%",
+              "current": "35%"
+            },
+            {
+              "id": "KR1.2",
+              "description": "NPS 점수 32→55 달성",
+              "metric": "NPS",
+              "target": "55",
+              "current": "32"
+            }
+          ],
+          "relatedProblems": ["P1", "P2"]
+        },
+        {
+          "id": "O2",
+          "description": "Net Revenue Retention 105%→120% 달성",
+          "timeframe": "Q3 2026",
+          "keyResults": [
+            {
+              "id": "KR2.1",
+              "description": "고객당 CS 대응 시간 48시간→12시간 이내",
+              "metric": "Response Time",
+              "target": "12h",
+              "current": "48h"
+            }
+          ],
+          "relatedProblems": ["P3"]
+        }
+      ]
+    },
+    "initiatives": [
+      {
+        "id": "I001",
+        "title": "인터랙티브 온보딩 플로우 재설계",
+        "description": "첫 7일 내 3개 핵심 기능 체험을 유도하는 가이드 투어 + 체크리스트 구현",
+        "rice": { "reach": 9, "impact": 9, "confidence": 8, "effort": 5, "score": 129.6 },
+        "priority": "P0",
+        "owner": "Product Team",
+        "timeline": "2026-Q1 ~ Q2"
+      },
+      {
+        "id": "I002",
+        "title": "AI 기반 이탈 예측 및 선제 개입 시스템",
+        "description": "사용 패턴 분석으로 이탈 위험 고객 자동 식별 + CS 알림",
+        "rice": { "reach": 8, "impact": 8, "confidence": 6, "effort": 7, "score": 54.9 },
+        "priority": "P0",
+        "owner": "Data Team",
+        "timeline": "2026-Q2"
+      },
+      {
+        "id": "I003",
+        "title": "SMB 전용 밸류 플랜 출시",
+        "description": "핵심 기능 중심의 저가 플랜으로 가격 민감 고객 유지",
+        "rice": { "reach": 7, "impact": 7, "confidence": 7, "effort": 4, "score": 85.8 },
+        "priority": "P1",
+        "owner": "Business Team",
+        "timeline": "2026-Q2"
+      }
+    ],
+    "roadmap": {
+      "phases": [
+        {
+          "phase": "Phase 1: Quick Wins",
+          "period": "Q1 2026",
+          "items": ["온보딩 체크리스트 v1", "이탈 위험 고객 수동 식별 프로세스"]
+        },
+        {
+          "phase": "Phase 2: Core",
+          "period": "Q2 2026",
+          "items": ["인터랙티브 온보딩 플로우", "AI 이탈 예측 MVP", "SMB 밸류 플랜 베타"]
+        },
+        {
+          "phase": "Phase 3: Scale",
+          "period": "Q3 2026",
+          "items": ["AI 모델 고도화", "자동 CS 개입 워크플로우", "성과 측정 및 리포트"]
+        }
+      ],
+      "quickWins": ["온보딩 체크리스트", "기존 고객 NPS 서베이", "이탈 고객 인터뷰 10건"]
+    },
+    "risks": {
+      "risks": [
+        {
+          "id": "R001",
+          "description": "AI 모델 정확도 부족으로 과도한 CS 알림 발생",
+          "riskLevel": "medium",
+          "probability": "Medium",
+          "impact": "Medium",
+          "mitigation": "6개월 학습 데이터 축적 후 본격 운영, 초기 수동 검증 병행"
+        },
+        {
+          "id": "R002",
+          "description": "SMB 밸류 플랜이 기존 고객 다운그레이드 유발",
+          "riskLevel": "high",
+          "probability": "Medium",
+          "impact": "High",
+          "mitigation": "신규 고객 전용 3개월 후 기존 고객 대상 단계적 확대"
+        }
+      ],
+      "overallRiskProfile": {
+        "level": "medium",
+        "summary": "기술적 리스크는 낮으나 가격 전략 변경에 따른 수익 리스크 존재"
+      }
+    },
+    "summary": {
+      "totalInitiatives": 3,
+      "p0Count": 2,
+      "highRiskCount": 1,
+      "quickWinCount": 3
+    }
+  }
+}
