@@ -4,18 +4,38 @@ const config = require('../config');
 const genAI = new GoogleGenerativeAI(config.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: config.GEMINI_MODEL });
 
-async function generate(prompt, systemInstruction = '') {
-  try {
-    const fullPrompt = systemInstruction
-      ? `${systemInstruction}\n\n${prompt}`
-      : prompt;
+const MAX_RETRIES = 3;
+const BASE_DELAY = 1000;
 
+async function withRetry(fn) {
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      const isRetryable = error.status === 429 || error.status >= 500 ||
+        error.message?.includes('RESOURCE_EXHAUSTED') ||
+        error.message?.includes('UNAVAILABLE');
+
+      if (attempt === MAX_RETRIES || !isRetryable) {
+        throw error;
+      }
+
+      const delay = BASE_DELAY * Math.pow(2, attempt) + Math.random() * 500;
+      console.warn(`[Gemini] Retry ${attempt + 1}/${MAX_RETRIES} after ${Math.round(delay)}ms: ${error.message}`);
+      await new Promise(r => setTimeout(r, delay));
+    }
+  }
+}
+
+async function generate(prompt, systemInstruction = '') {
+  const fullPrompt = systemInstruction
+    ? `${systemInstruction}\n\n${prompt}`
+    : prompt;
+
+  return withRetry(async () => {
     const result = await model.generateContent(fullPrompt);
     return result.response.text();
-  } catch (error) {
-    console.error('Gemini API 오류:', error.message);
-    throw error;
-  }
+  });
 }
 
 async function generateJSON(prompt, systemInstruction = '') {

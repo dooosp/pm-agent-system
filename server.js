@@ -22,6 +22,29 @@ app.use((req, res, next) => {
   next();
 });
 
+// Rate Limiting (10 req/min per IP for API routes)
+const rateLimitMap = new Map();
+const RATE_LIMIT = 10;
+const RATE_WINDOW = 60 * 1000;
+
+app.use('/api', (req, res, next) => {
+  if (req.method === 'OPTIONS') return next();
+  const ip = req.ip || req.connection.remoteAddress;
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+
+  if (!entry || now - entry.start > RATE_WINDOW) {
+    rateLimitMap.set(ip, { start: now, count: 1 });
+    return next();
+  }
+
+  entry.count++;
+  if (entry.count > RATE_LIMIT) {
+    return res.status(429).json({ error: 'Too many requests. Try again later.' });
+  }
+  next();
+});
+
 // Middleware
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
