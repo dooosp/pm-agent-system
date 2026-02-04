@@ -45,7 +45,7 @@ async function execute(analysisResult) {
     summary: {
       totalInitiatives: initiatives.length,
       p0Count: initiatives.filter(i => i.priority === 'P0').length,
-      highRiskCount: riskAnalysis.risks.filter(r =>
+      highRiskCount: (riskAnalysis.risks || []).filter(r =>
         r.riskLevel === 'critical' || r.riskLevel === 'high'
       ).length,
       quickWinCount: roadmap.quickWins?.length || 0

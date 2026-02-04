@@ -58,13 +58,19 @@ async function execute(planningResult, documentType) {
 
 async function generateBriefing(planningResult) {
   const gemini = require('../../services/gemini');
-  const { objectives, initiatives, risks } = planningResult;
+  const objectives = planningResult.objectives || {};
+  const initiatives = planningResult.initiatives || [];
+  const risks = planningResult.risks || {};
+
+  if (initiatives.length === 0) {
+    return { error: '이니셔티브가 없어 브리핑을 생성할 수 없습니다' };
+  }
 
   const prompt = `
 계획 내용:
-- OKR: ${objectives.objectives?.map(o => o.description).join(', ')}
+- OKR: ${(objectives.objectives || []).map(o => o.description).join(', ') || '미정'}
 - 이니셔티브: ${initiatives.slice(0, 3).map(i => i.title).join(', ')}
-- 리스크: ${risks.overallRiskProfile?.summary}
+- 리스크: ${risks.overallRiskProfile?.summary || '분석 중'}
 
 이해관계자별 맞춤 브리핑을 작성하세요.
 

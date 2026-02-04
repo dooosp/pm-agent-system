@@ -11,24 +11,29 @@ PRD 작성 원칙:
 5. 기술적 제약사항 명시`;
 
 async function generatePRD(planningResult) {
-  const { objectives, initiatives, roadmap: _roadmap } = planningResult;
+  const objectives = planningResult.objectives || {};
+  const initiatives = planningResult.initiatives || [];
 
   const topInitiative = initiatives[0];
   if (!topInitiative) {
-    return { error: 'No initiative to create PRD' };
+    return { error: '이니셔티브가 없어 PRD를 생성할 수 없습니다' };
   }
+
+  const okrList = (objectives.objectives || []).slice(0, 2);
 
   const prompt = `
 최우선 이니셔티브:
 - ID: ${topInitiative.id}
 - 제목: ${topInitiative.title}
-- 설명: ${topInitiative.description}
-- RICE 점수: ${topInitiative.rice.score}
+- 설명: ${topInitiative.description || ''}
+- RICE 점수: ${topInitiative.rice?.score || 'N/A'}
 
 관련 OKR:
-${objectives.objectives?.slice(0, 2).map(o =>
-  `- ${o.description}\n  KRs: ${o.keyResults?.map(kr => kr.description).join(', ')}`
-).join('\n')}
+${okrList.length > 0
+  ? okrList.map(o =>
+    `- ${o.description}\n  KRs: ${(o.keyResults || []).map(kr => kr.description).join(', ')}`
+  ).join('\n')
+  : '- 미정'}
 
 이 이니셔티브에 대한 PRD를 작성하세요.
 

@@ -10,11 +10,13 @@ const SYSTEM_PROMPT = `당신은 이해관계자 관리 전문가입니다.
 4. Win-Win 프레이밍`;
 
 async function prepareObjectionHandling(planningResult, documentType) {
-  const { initiatives, risks, summary } = planningResult;
+  const initiatives = planningResult.initiatives || [];
+  const risks = planningResult.risks || {};
+  const summary = planningResult.summary || {};
 
   const prompt = `
 제안 내용:
-- 이니셔티브 수: ${summary.totalInitiatives}
+- 이니셔티브 수: ${summary.totalInitiatives || initiatives.length}
 - 최우선 과제: ${initiatives[0]?.title || 'N/A'}
 - 리스크 수준: ${risks.overallRiskProfile?.level || 'medium'}
 

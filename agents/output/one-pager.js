@@ -10,22 +10,29 @@ One-Pager 원칙:
 4. 리스크와 완화방안 병기`;
 
 async function generateOnePager(planningResult) {
-  const { objectives, initiatives, risks, summary } = planningResult;
+  const objectives = planningResult.objectives || {};
+  const initiatives = planningResult.initiatives || [];
+  const risks = planningResult.risks || {};
+  const summary = planningResult.summary || {};
+
+  if (initiatives.length === 0) {
+    return { error: '이니셔티브가 없어 One-Pager를 생성할 수 없습니다' };
+  }
 
   const prompt = `
 계획 요약:
-- 총 이니셔티브: ${summary.totalInitiatives}개
-- P0 (최우선): ${summary.p0Count}개
-- 고위험 항목: ${summary.highRiskCount}개
-- Quick Win: ${summary.quickWinCount}개
+- 총 이니셔티브: ${summary.totalInitiatives || initiatives.length}개
+- P0 (최우선): ${summary.p0Count || 0}개
+- 고위험 항목: ${summary.highRiskCount || 0}개
+- Quick Win: ${summary.quickWinCount || 0}개
 
 최우선 이니셔티브:
 ${initiatives.slice(0, 3).map(i =>
-  `- ${i.title} (RICE: ${i.rice.score}, 우선순위: ${i.priority})`
+  `- ${i.title} (RICE: ${i.rice?.score || 'N/A'}, 우선순위: ${i.priority || 'TBD'})`
 ).join('\n')}
 
 OKR:
-${objectives.objectives?.slice(0, 2).map(o => `- ${o.description}`).join('\n')}
+${(objectives.objectives || []).slice(0, 2).map(o => `- ${o.description}`).join('\n') || '- 미정'}
 
 리스크:
 ${risks.overallRiskProfile?.summary || '분석 중'}
