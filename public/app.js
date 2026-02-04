@@ -4,10 +4,10 @@ const API_BASE = location.hostname === 'localhost' || location.hostname === '127
   : 'https://pm-agent-system.onrender.com';
 
 let currentSession = null;
-let currentTab = 'input';
+let currentTab = 'input'; // eslint-disable-line no-unused-vars
 
 // Analyze
-async function analyze() {
+async function analyze() { // eslint-disable-line no-unused-vars
   const query = document.getElementById('query').value.trim();
   if (!query) return alert('주제를 입력해주세요');
 
@@ -166,7 +166,7 @@ document.querySelectorAll('.tab').forEach(tab => {
 });
 
 // Document Generation
-async function generateDoc(type) {
+async function generateDoc(type) { // eslint-disable-line no-unused-vars
   if (!currentSession) return alert('먼저 분석을 실행하세요');
 
   const btn = event.target;

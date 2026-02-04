@@ -116,7 +116,7 @@ async function inputAgent(query) {
           }
         });
       }
-    } catch (e) { /* 태깅 실패해도 계속 진행 */ }
+    } catch (_e) { /* 태깅 실패해도 계속 진행 */ }
   }
 
   return {
@@ -222,7 +222,7 @@ JSON으로 반환:
 
 // ========== Output Agent ==========
 async function generateDocument(planningResult, documentType) {
-  const { objectives, initiatives, risks } = planningResult;
+  const { objectives, initiatives, risks: _risks } = planningResult;
 
   let prompt;
   if (documentType === 'one-pager') {

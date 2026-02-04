@@ -1,4 +1,3 @@
-const config = require('../../config');
 
 // 제외할 키워드 (광고, 스팸 등)
 const NOISE_KEYWORDS = [

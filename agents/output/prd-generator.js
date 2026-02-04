@@ -11,7 +11,7 @@ PRD 작성 원칙:
 5. 기술적 제약사항 명시`;
 
 async function generatePRD(planningResult) {
-  const { objectives, initiatives, roadmap } = planningResult;
+  const { objectives, initiatives, roadmap: _roadmap } = planningResult;
 
   const topInitiative = initiatives[0];
   if (!topInitiative) {

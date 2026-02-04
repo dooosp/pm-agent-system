@@ -1,5 +1,4 @@
 const gemini = require('../../services/gemini');
-const config = require('../../config');
 
 const SYSTEM_PROMPT = `당신은 근본 원인 분석(RCA) 전문가입니다.
 5-Why 기법을 사용하여 문제의 근본 원인을 파악합니다.
