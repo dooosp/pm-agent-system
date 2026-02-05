@@ -12,8 +12,10 @@ async function analyze() { // eslint-disable-line no-unused-vars
   if (!query) return alert('주제를 입력해주세요');
 
   const btn = document.getElementById('analyzeBtn');
+  const demoBtn = document.getElementById('demoBtn');
   btn.disabled = true;
   btn.textContent = '분석 중...';
+  if (demoBtn) demoBtn.disabled = true;
 
   showProgress();
   setStep(1);
@@ -43,6 +45,7 @@ async function analyze() { // eslint-disable-line no-unused-vars
   } finally {
     btn.disabled = false;
     btn.textContent = '분석 시작';
+    if (demoBtn) demoBtn.disabled = false;
   }
 }
 
@@ -57,11 +60,27 @@ function hideProgress() {
   document.getElementById('progress').classList.add('hidden');
 }
 
+const STEP_STATUS = {
+  1: { active: '수집 중...', done: '수집 완료' },
+  2: { active: '분석 중...', done: '분석 완료' },
+  3: { active: '계획 수립 중...', done: '계획 완료' },
+  4: { active: '문서 생성 중...', done: '완료' }
+};
+
 function setStep(step) {
   document.querySelectorAll('.progress-step').forEach((el, i) => {
+    const stepNum = i + 1;
+    const statusText = el.querySelector('.status-text');
     el.classList.remove('active', 'done');
-    if (i + 1 < step) el.classList.add('done');
-    if (i + 1 === step) el.classList.add('active');
+    if (stepNum < step) {
+      el.classList.add('done');
+      if (statusText) statusText.textContent = STEP_STATUS[stepNum]?.done || '';
+    } else if (stepNum === step) {
+      el.classList.add('active');
+      if (statusText) statusText.textContent = STEP_STATUS[stepNum]?.active || '';
+    } else {
+      if (statusText) statusText.textContent = '';
+    }
   });
 }
 
@@ -169,9 +188,11 @@ document.querySelectorAll('.tab').forEach(tab => {
 async function generateDoc(type) { // eslint-disable-line no-unused-vars
   if (!currentSession) return alert('먼저 분석을 실행하세요');
 
-  const btn = event.target;
-  btn.disabled = true;
-  btn.textContent = '생성 중...';
+  const btn = event.target.closest('button');
+  const allDocBtns = document.querySelectorAll('.doc-buttons button');
+  allDocBtns.forEach(b => b.disabled = true);
+  const originalTitle = btn.querySelector('.doc-card-title');
+  if (originalTitle) originalTitle.textContent = '생성 중...';
 
   try {
     const body = currentSession.sessionId
@@ -199,8 +220,9 @@ async function generateDoc(type) { // eslint-disable-line no-unused-vars
   } catch (error) {
     alert('문서 생성 오류: ' + error.message);
   } finally {
-    btn.disabled = false;
-    btn.textContent = btn.textContent.replace('생성 중...', type.toUpperCase() + ' 생성');
+    allDocBtns.forEach(b => b.disabled = false);
+    const typeNames = { prd: 'PRD', 'one-pager': 'One-Pager', briefing: 'Briefing' };
+    if (originalTitle) originalTitle.textContent = typeNames[type] || type.toUpperCase();
   }
 }
 

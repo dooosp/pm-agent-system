@@ -20,13 +20,14 @@
         <div class="input-group">
           <input type="text" id="query" placeholder="예: 반도체 장비 시장 동향 분석">
           <button id="analyzeBtn" onclick="analyze()">분석 시작</button>
-          <button class="demo-btn" onclick="loadDemo()">Demo</button>
+          <button class="demo-btn" id="demoBtn" onclick="loadDemo()">Demo</button>
         </div>
+        <p class="input-hint">산업 트렌드, 시장 분석, 기술 동향 등 PM 관점의 주제를 입력하세요</p>
       </section>
 
       <!-- Feature Preview (분석 전 기능 안내) -->
       <section id="feature-preview" class="feature-preview">
-        <h3>분석 파이프라인</h3>
+        <h2>분석 파이프라인</h2>
         <div class="preview-pipeline">
           <div class="preview-step"><span class="icon">🔍</span><span class="label">Input</span><span class="desc">뉴스·데이터 수집</span></div>
           <div class="preview-arrow">→</div>
@@ -36,7 +37,7 @@
           <div class="preview-arrow">→</div>
           <div class="preview-step"><span class="icon">📄</span><span class="label">Output</span><span class="desc">문서 생성</span></div>
         </div>
-        <h3>생성 가능한 문서</h3>
+        <h2>생성 가능한 문서</h2>
         <div class="preview-docs">
           <div class="preview-doc"><span class="doc-icon">📋</span><span class="doc-name">PRD</span></div>
           <div class="preview-doc"><span class="doc-icon">📝</span><span class="doc-name">One-Pager</span></div>
@@ -50,18 +51,22 @@
           <div class="progress-step" data-step="1">
             <span class="icon">🔍</span>
             <span class="label">Input</span>
+            <span class="status-text"></span>
           </div>
           <div class="progress-step" data-step="2">
             <span class="icon">🧠</span>
             <span class="label">Analysis</span>
+            <span class="status-text"></span>
           </div>
           <div class="progress-step" data-step="3">
             <span class="icon">📐</span>
             <span class="label">Planning</span>
+            <span class="status-text"></span>
           </div>
           <div class="progress-step" data-step="4">
             <span class="icon">📄</span>
             <span class="label">Output</span>
+            <span class="status-text"></span>
           </div>
         </div>
       </section>
@@ -81,11 +86,23 @@
 
         <!-- Document Generation -->
         <div id="doc-gen" class="doc-gen hidden">
-          <h3>문서 생성</h3>
+          <h2>문서 생성</h2>
           <div class="doc-buttons">
-            <button onclick="generateDoc('prd')">PRD 생성</button>
-            <button onclick="generateDoc('one-pager')">One-Pager 생성</button>
-            <button onclick="generateDoc('briefing')">Briefing 생성</button>
+            <button onclick="generateDoc('prd')">
+              <span class="doc-card-icon">📋</span>
+              <span class="doc-card-title">PRD</span>
+              <span class="doc-card-desc">제품 요구사항 문서</span>
+            </button>
+            <button onclick="generateDoc('one-pager')">
+              <span class="doc-card-icon">📝</span>
+              <span class="doc-card-title">One-Pager</span>
+              <span class="doc-card-desc">한 장 요약 보고서</span>
+            </button>
+            <button onclick="generateDoc('briefing')">
+              <span class="doc-card-icon">🎤</span>
+              <span class="doc-card-title">Briefing</span>
+              <span class="doc-card-desc">발표용 브리핑 자료</span>
+            </button>
           </div>
           <div id="export-bar" class="export-bar hidden">
             <button class="export-btn" onclick="exportMarkdown()">Markdown 다운로드</button>
