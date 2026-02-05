@@ -1,0 +1,372 @@
+/* Feature Preview */
+.feature-preview {
+  margin: 40px 0;
+  padding: 24px;
+  background: #0f0f1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+}
+
+.feature-preview h2 {
+  color: #888;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+}
+
+.feature-preview h2:nth-of-type(2) {
+  margin-top: 24px;
+}
+
+.preview-pipeline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.preview-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 16px;
+  background: #1a1a2e;
+  border-radius: 8px;
+  border: 1px solid #333;
+  min-width: 100px;
+}
+
+.preview-step .icon { font-size: 1.5rem; }
+.preview-step .label { color: #00d9ff; font-weight: bold; font-size: 0.85rem; }
+.preview-step .desc { color: #aaa; font-size: 0.75rem; }
+
+.preview-arrow {
+  color: #00ff88;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.preview-docs {
+  display: flex;
+  gap: 12px;
+}
+
+.preview-doc {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #1a1a2e;
+  border-radius: 8px;
+  border: 1px dashed #333;
+}
+
+.preview-doc .doc-icon { font-size: 1.2rem; }
+.preview-doc .doc-name { color: #e4e4e4; font-size: 0.9rem; }
+
+/* Progress */
+.progress-section {
+  margin: 40px 0;
+}
+
+.progress-bar {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+
+.progress-bar::before {
+  content: '';
+  position: absolute;
+  top: 24px;
+  left: 10%;
+  right: 10%;
+  height: 4px;
+  background: #333;
+}
+
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 1;
+}
+
+.progress-step .icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1a1a2e;
+  border: 3px solid #333;
+  border-radius: 50%;
+  font-size: 1.5rem;
+}
+
+.progress-step.active .icon {
+  border-color: #00d9ff;
+  animation: pulse 1s infinite;
+}
+
+.progress-step.done .icon {
+  border-color: #00ff88;
+  background: #00ff8822;
+}
+
+.progress-step .status-text {
+  font-size: 0.8rem;
+  color: #555;
+  min-height: 1.2em;
+}
+
+.progress-info {
+  text-align: center;
+  margin-top: 16px;
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.progress-step.active .status-text {
+  color: #00d9ff;
+  animation: blink 1.2s ease-in-out infinite;
+}
+
+.progress-step.done .status-text {
+  color: #00ff88;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 217, 255, 0.4); }
+  50% { box-shadow: 0 0 0 10px rgba(0, 217, 255, 0); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+}
+
+.tab {
+  padding: 14px 32px;
+  border: none;
+  border-bottom: 3px solid transparent;
+  background: #1a1a2e;
+  color: #888;
+  cursor: pointer;
+  border-radius: 8px 8px 0 0;
+  font-size: 0.95rem;
+  transition: background 0.2s, color 0.2s;
+}
+
+.tab:hover {
+  background: #1e1e35;
+  color: #aaa;
+}
+
+.tab.active {
+  background: #0f0f1a;
+  color: #00d9ff;
+  border-bottom-color: #00d9ff;
+}
+
+.tab:focus {
+  box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.4);
+}
+
+.tab-content {
+  background: #0f0f1a;
+  border-radius: 0 8px 8px 8px;
+  padding: 24px;
+  min-height: 300px;
+  white-space: pre-wrap;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  overflow-x: auto;
+}
+
+/* Document Generation */
+.doc-gen {
+  margin-top: 30px;
+  padding-top: 30px;
+  border-top: 1px solid #333;
+}
+
+.doc-gen h2 {
+  margin-bottom: 16px;
+}
+
+.doc-buttons {
+  display: flex;
+  gap: 16px;
+}
+
+.doc-buttons button {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 20px 16px;
+  border: 1px solid #333;
+  border-radius: 12px;
+  background: #1a1a2e;
+  color: #e4e4e4;
+  transition: border-color 0.2s, transform 0.2s, background 0.2s;
+}
+
+.doc-buttons button:hover {
+  border-color: #00d9ff;
+  background: #1e1e35;
+}
+
+.doc-buttons button .doc-card-icon {
+  font-size: 1.5rem;
+}
+
+.doc-buttons button .doc-card-title {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.doc-buttons button .doc-card-desc {
+  font-size: 0.8rem;
+  color: #aaa;
+}
+
+/* Results */
+.results-section {
+  margin-top: 40px;
+}
+
+/* Formatted Content */
+.formatted h4 {
+  color: #00d9ff;
+  margin: 16px 0 12px;
+}
+
+.formatted ul {
+  list-style: none;
+  padding: 0;
+}
+
+.formatted li {
+  padding: 12px;
+  margin-bottom: 8px;
+  background: #1a1a2e;
+  border-radius: 8px;
+  border-left: 3px solid #00d9ff;
+}
+
+.formatted li strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.formatted .tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.formatted .tag {
+  background: #00d9ff33;
+  color: #00d9ff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+.formatted .score {
+  color: #00ff88;
+  font-size: 0.85rem;
+}
+
+.problem-card, .initiative-card {
+  background: #1a1a2e;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  border-left: 4px solid #00d9ff;
+}
+
+.initiative-card.P0 { border-left-color: #ff4757; }
+.initiative-card.P1 { border-left-color: #ffa502; }
+.initiative-card.P2 { border-left-color: #00ff88; }
+
+.initiative-card .rice {
+  display: inline-block;
+  background: #00ff8833;
+  color: #00ff88;
+  padding: 4px 12px;
+  border-radius: 4px;
+  margin-top: 8px;
+  font-weight: bold;
+}
+
+.formatted .summary {
+  background: linear-gradient(90deg, #00d9ff22, #00ff8822);
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-style: italic;
+}
+
+/* Demo */
+.demo-btn {
+  padding: 12px 20px;
+  border: 1px solid #a78bfa;
+  background: transparent;
+  color: #a78bfa;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s, color 0.2s;
+}
+
+.demo-btn:hover {
+  background: #a78bfa;
+  color: #1a1a2e;
+}
+
+.demo-btn:focus {
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.4);
+}
+
+/* Export */
+.export-bar {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.export-btn {
+  padding: 10px 24px;
+  border: 1px solid #4ade80;
+  background: transparent;
+  color: #4ade80;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background 0.2s, color 0.2s;
+}
+
+.export-btn:hover {
+  background: #4ade80;
+  color: #1a1a2e;
+}
+
+.export-btn:focus {
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.4);
+}

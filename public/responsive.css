@@ -1,0 +1,115 @@
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 20px 16px;
+  }
+
+  header h1 {
+    font-size: 1.8rem;
+  }
+
+  .subtitle {
+    font-size: 0.9rem;
+  }
+
+  .input-group {
+    flex-direction: column;
+  }
+
+  .input-group input {
+    padding: 14px 16px;
+  }
+
+  .input-group button {
+    padding: 14px;
+    width: 100%;
+  }
+
+  .preview-pipeline {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .preview-arrow { display: none; }
+
+  .preview-step {
+    width: 45%;
+    min-width: auto;
+  }
+
+  .preview-docs {
+    flex-direction: column;
+  }
+
+  .progress-bar {
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+  }
+
+  .progress-bar::before {
+    display: none;
+  }
+
+  .progress-step {
+    width: 45%;
+  }
+
+  .progress-step .icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+
+  .progress-step .label {
+    font-size: 0.85rem;
+  }
+
+  .tabs {
+    flex-wrap: wrap;
+  }
+
+  .tab {
+    padding: 12px 16px;
+    font-size: 0.85rem;
+    flex: 1;
+    text-align: center;
+  }
+
+  .tab-content {
+    padding: 16px;
+    font-size: 0.8rem;
+    min-height: 250px;
+  }
+
+  .doc-buttons {
+    flex-direction: column;
+  }
+
+  .doc-buttons button {
+    padding: 14px;
+  }
+
+  .formatted li {
+    padding: 10px;
+  }
+
+  .problem-card, .initiative-card {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  header h1 {
+    font-size: 1.5rem;
+  }
+
+  .progress-step {
+    width: 100%;
+  }
+
+  .tab {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+}
