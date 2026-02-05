@@ -225,18 +225,34 @@ function formatData(tab, data) {
       `).join('')
       : '<p class="no-data">이니셔티브가 없습니다. Gemini API 오류일 수 있습니다.</p>';
 
-    const quarters = Object.keys(roadmap);
-    const roadmapHtml = quarters.length > 0
-      ? `<table class="roadmap-table">
-          <thead><tr><th>분기</th><th>마일스톤</th></tr></thead>
-          <tbody>${quarters.map(q => `
-            <tr>
-              <td><span class="quarter-badge">${q}</span></td>
-              <td>${Array.isArray(roadmap[q]) ? roadmap[q].join(', ') : roadmap[q]}</td>
-            </tr>
-          `).join('')}</tbody>
-        </table>`
-      : '<p class="no-data">로드맵 정보 없음</p>';
+    // 로드맵: phases 배열 또는 Q1/Q2 객체 형식 지원
+    const phases = roadmap.phases || [];
+    const quarters = Object.keys(roadmap).filter(k => k !== 'phases' && k !== 'quickWins');
+    let roadmapHtml = '';
+    if (phases.length > 0) {
+      roadmapHtml = `<table class="roadmap-table">
+        <thead><tr><th>단계</th><th>기간</th><th>마일스톤</th></tr></thead>
+        <tbody>${phases.map(p => `
+          <tr>
+            <td><span class="quarter-badge">${p.phase || ''}</span></td>
+            <td>${p.period || ''}</td>
+            <td>${Array.isArray(p.items) ? p.items.join(', ') : ''}</td>
+          </tr>
+        `).join('')}</tbody>
+      </table>`;
+    } else if (quarters.length > 0) {
+      roadmapHtml = `<table class="roadmap-table">
+        <thead><tr><th>분기</th><th>마일스톤</th></tr></thead>
+        <tbody>${quarters.map(q => `
+          <tr>
+            <td><span class="quarter-badge">${q}</span></td>
+            <td>${Array.isArray(roadmap[q]) ? roadmap[q].join(', ') : roadmap[q]}</td>
+          </tr>
+        `).join('')}</tbody>
+      </table>`;
+    } else {
+      roadmapHtml = '<p class="no-data">로드맵 정보 없음</p>';
+    }
 
     return `<div class="formatted">
       ${errorHtml}
