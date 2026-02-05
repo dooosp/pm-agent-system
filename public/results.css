@@ -1,0 +1,338 @@
+/* Results Section */
+.results-section {
+  margin-top: 40px;
+}
+
+/* Formatted Content */
+.formatted h4 {
+  color: #00d9ff;
+  margin: 16px 0 12px;
+}
+
+.formatted ul {
+  list-style: none;
+  padding: 0;
+}
+
+.formatted li {
+  padding: 12px;
+  margin-bottom: 8px;
+  background: #1a1a2e;
+  border-radius: 8px;
+  border-left: 3px solid #00d9ff;
+}
+
+.formatted li strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.formatted .tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.formatted .tag {
+  background: #00d9ff33;
+  color: #00d9ff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+.formatted .score {
+  color: #00ff88;
+  font-size: 0.85rem;
+}
+
+.problem-card, .initiative-card {
+  background: #1a1a2e;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  border-left: 4px solid #00d9ff;
+}
+
+.initiative-card.P0 { border-left-color: #ff4757; }
+.initiative-card.P1 { border-left-color: #ffa502; }
+.initiative-card.P2 { border-left-color: #00ff88; }
+
+.initiative-card .rice {
+  display: inline-block;
+  background: #00ff8833;
+  color: #00ff88;
+  padding: 4px 12px;
+  border-radius: 4px;
+  margin-top: 8px;
+  font-weight: bold;
+}
+
+.formatted .summary {
+  background: linear-gradient(90deg, #00d9ff22, #00ff8822);
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-style: italic;
+}
+
+/* News Grid (Input Tab) */
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.news-card {
+  background: #1a1a2e;
+  border-radius: 10px;
+  padding: 16px;
+  border: 1px solid #333;
+  transition: border-color 0.2s;
+}
+
+.news-card:hover {
+  border-color: #00d9ff;
+}
+
+.news-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.relevance-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.relevance-badge.high { background: #00ff8833; color: #00ff88; }
+.relevance-badge.medium { background: #ffa50233; color: #ffa502; }
+.relevance-badge.low { background: #ff475733; color: #ff4757; }
+
+.news-title {
+  font-size: 0.95rem;
+  margin: 0 0 10px;
+  line-height: 1.4;
+  color: #e4e4e4;
+}
+
+.news-source {
+  font-size: 0.75rem;
+  color: #666;
+  margin-top: 10px;
+}
+
+/* RCA Visualization (Analysis Tab) */
+.problem-card.enhanced {
+  border: 1px solid #333;
+}
+
+.problem-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.problem-id {
+  background: #00d9ff33;
+  color: #00d9ff;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+
+.urgency-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.urgency-badge.high { background: #ff475733; color: #ff4757; }
+.urgency-badge.medium { background: #ffa50233; color: #ffa502; }
+.urgency-badge.low { background: #00ff8833; color: #00ff88; }
+
+.rca-chain {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0;
+  flex-wrap: wrap;
+}
+
+.rca-node {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  max-width: 200px;
+}
+
+.rca-node.symptom {
+  background: #ff475722;
+  border: 1px solid #ff4757;
+  color: #fca5a5;
+}
+
+.rca-node.root {
+  background: #00ff8822;
+  border: 1px solid #00ff88;
+  color: #86efac;
+}
+
+.rca-arrow {
+  color: #666;
+  font-size: 1.2rem;
+}
+
+.impact-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.impact-track {
+  flex: 1;
+  height: 8px;
+  background: #333;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.impact-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00d9ff, #00ff88);
+  border-radius: 4px;
+  transition: width 0.3s;
+}
+
+.impact-score {
+  font-weight: bold;
+  color: #00d9ff;
+  min-width: 45px;
+}
+
+/* Roadmap Table (Planning Tab) */
+.roadmap-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+
+.roadmap-table th,
+.roadmap-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #333;
+}
+
+.roadmap-table th {
+  background: #1a1a2e;
+  color: #00d9ff;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.roadmap-table td {
+  color: #ccc;
+  font-size: 0.9rem;
+}
+
+.roadmap-table tr:hover td {
+  background: #1a1a2e44;
+}
+
+.quarter-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  background: #00d9ff22;
+  color: #00d9ff;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+
+/* Document Sections (Output Tab) */
+.doc-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.doc-section {
+  background: #1a1a2e;
+  border-radius: 10px;
+  padding: 20px;
+  border-left: 4px solid #00d9ff;
+}
+
+.doc-section h4 {
+  margin: 0 0 12px;
+  color: #00d9ff;
+  font-size: 1rem;
+}
+
+.doc-section p,
+.doc-section li {
+  color: #ccc;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.doc-section p {
+  margin-bottom: 8px;
+}
+
+.doc-section ul {
+  margin: 8px 0 0;
+  padding-left: 20px;
+}
+
+.doc-section ul li {
+  margin-bottom: 6px;
+}
+
+.doc-section.highlight {
+  background: linear-gradient(135deg, #00d9ff11, #00ff8811);
+  border-left-color: #00ff88;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.feature-item {
+  background: #0f0f1a;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #333;
+}
+
+.feature-item strong {
+  display: block;
+  color: #e4e4e4;
+  margin-bottom: 4px;
+}
+
+.feature-item span {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+/* Responsive - Results */
+@media (max-width: 768px) {
+  .news-grid { grid-template-columns: 1fr; }
+  .feature-grid { grid-template-columns: 1fr; }
+  .rca-chain { flex-direction: column; }
+  .rca-arrow { transform: rotate(90deg); }
+}

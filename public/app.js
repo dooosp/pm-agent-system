@@ -265,62 +265,159 @@ function formatData(tab, data) {
 
   if (tab === 'output' && data.document) {
     const doc = data.document;
+    const docType = data.documentType || '';
     const sections = [];
 
-    if (doc.executiveSummary || doc.summary) {
-      sections.push(`<div class="doc-section highlight">
-        <h4>📋 Executive Summary</h4>
-        <p>${doc.executiveSummary || doc.summary}</p>
-      </div>`);
+    // PRD 문서
+    if (docType === 'prd') {
+      if (doc.overview) {
+        sections.push(`<div class="doc-section highlight">
+          <h4>📋 개요</h4>
+          <p><strong>문제:</strong> ${doc.overview.problem || ''}</p>
+          <p><strong>솔루션:</strong> ${doc.overview.solution || ''}</p>
+          ${doc.overview.goals ? `<p><strong>목표:</strong> ${doc.overview.goals.join(', ')}</p>` : ''}
+        </div>`);
+      }
+      if (doc.successMetrics?.length) {
+        sections.push(`<div class="doc-section">
+          <h4>📊 성공 지표</h4>
+          <table class="roadmap-table">
+            <thead><tr><th>지표</th><th>현재</th><th>목표</th></tr></thead>
+            <tbody>${doc.successMetrics.map(m => `
+              <tr><td>${m.metric}</td><td>${m.current}</td><td>${m.target}</td></tr>
+            `).join('')}</tbody>
+          </table>
+        </div>`);
+      }
+      if (doc.userStories?.length) {
+        sections.push(`<div class="doc-section">
+          <h4>👤 User Stories</h4>
+          <div class="feature-grid">${doc.userStories.map(us => `
+            <div class="feature-item">
+              <strong>${us.id} [${us.priority}]</strong>
+              <span>${us.story}</span>
+            </div>
+          `).join('')}</div>
+        </div>`);
+      }
+      if (doc.scope) {
+        sections.push(`<div class="doc-section">
+          <h4>🎯 범위</h4>
+          <p><strong>포함:</strong> ${(doc.scope.inScope || []).join(', ')}</p>
+          <p><strong>제외:</strong> ${(doc.scope.outOfScope || []).join(', ')}</p>
+        </div>`);
+      }
+      if (doc.timeline?.phases?.length) {
+        sections.push(`<div class="doc-section">
+          <h4>📅 타임라인</h4>
+          <table class="roadmap-table">
+            <thead><tr><th>단계</th><th>기간</th><th>산출물</th></tr></thead>
+            <tbody>${doc.timeline.phases.map(p => `
+              <tr><td>${p.phase}</td><td>${p.duration || ''}</td><td>${(p.deliverables || []).join(', ')}</td></tr>
+            `).join('')}</tbody>
+          </table>
+        </div>`);
+      }
+      if (doc.openQuestions?.length) {
+        sections.push(`<div class="doc-section">
+          <h4>❓ 미결 사항</h4>
+          <ul>${doc.openQuestions.map(q => `<li>${q}</li>`).join('')}</ul>
+        </div>`);
+      }
     }
-    if (doc.problem) {
-      sections.push(`<div class="doc-section">
-        <h4>🔍 Problem</h4>
-        <p>${doc.problem}</p>
-      </div>`);
+
+    // One-Pager 문서
+    else if (docType === 'one-pager') {
+      if (doc.executiveSummary) {
+        sections.push(`<div class="doc-section highlight">
+          <h4>📋 핵심 요약</h4>
+          <p>${doc.executiveSummary}</p>
+        </div>`);
+      }
+      if (doc.problem) {
+        sections.push(`<div class="doc-section">
+          <h4>🔍 문제</h4>
+          <p><strong>정의:</strong> ${doc.problem.statement || ''}</p>
+          <p><strong>임팩트:</strong> ${doc.problem.impact || ''}</p>
+          <p><strong>긴급성:</strong> ${doc.problem.urgency || ''}</p>
+        </div>`);
+      }
+      if (doc.solution) {
+        sections.push(`<div class="doc-section">
+          <h4>💡 솔루션</h4>
+          <p>${doc.solution.approach || ''}</p>
+          ${doc.solution.keyActions?.length ? `<ul>${doc.solution.keyActions.map(a => `<li>${a}</li>`).join('')}</ul>` : ''}
+        </div>`);
+      }
+      if (doc.expectedOutcome) {
+        sections.push(`<div class="doc-section">
+          <h4>📈 기대 성과</h4>
+          <p><strong>단기 (3개월):</strong> ${doc.expectedOutcome.shortTerm || ''}</p>
+          <p><strong>장기 (1년):</strong> ${doc.expectedOutcome.longTerm || ''}</p>
+        </div>`);
+      }
+      if (doc.investment) {
+        sections.push(`<div class="doc-section">
+          <h4>💰 투자</h4>
+          <p><strong>리소스:</strong> ${doc.investment.resources || ''}</p>
+          <p><strong>기간:</strong> ${doc.investment.timeline || ''}</p>
+          ${doc.investment.cost ? `<p><strong>비용:</strong> ${doc.investment.cost}</p>` : ''}
+        </div>`);
+      }
+      if (doc.risks) {
+        sections.push(`<div class="doc-section">
+          <h4>⚠️ 리스크</h4>
+          <p><strong>주요 리스크:</strong> ${doc.risks.topRisk || ''}</p>
+          <p><strong>완화 방안:</strong> ${doc.risks.mitigation || ''}</p>
+        </div>`);
+      }
+      if (doc.ask) {
+        sections.push(`<div class="doc-section highlight">
+          <h4>🙏 요청 사항</h4>
+          <p><strong>결정:</strong> ${doc.ask.decision || ''}</p>
+          <p><strong>기한:</strong> ${doc.ask.deadline || ''}</p>
+          ${doc.ask.nextSteps?.length ? `<p><strong>다음 단계:</strong> ${doc.ask.nextSteps.join(', ')}</p>` : ''}
+        </div>`);
+      }
     }
-    if (doc.goals || doc.objectives) {
-      const goals = doc.goals || doc.objectives || [];
-      sections.push(`<div class="doc-section">
-        <h4>🎯 Goals</h4>
-        <ul>${(Array.isArray(goals) ? goals : [goals]).map(g => `<li>${typeof g === 'object' ? g.description || JSON.stringify(g) : g}</li>`).join('')}</ul>
-      </div>`);
+
+    // Briefing 문서
+    else if (docType === 'briefing') {
+      if (doc.context) {
+        sections.push(`<div class="doc-section highlight">
+          <h4>📋 배경</h4>
+          <p>${doc.context}</p>
+        </div>`);
+      }
+      if (doc.stakeholderBriefings?.length) {
+        doc.stakeholderBriefings.forEach(sb => {
+          sections.push(`<div class="doc-section">
+            <h4>👥 ${sb.stakeholder}</h4>
+            <p><strong>핵심 메시지:</strong> ${sb.keyMessage || ''}</p>
+            ${sb.relevantPoints?.length ? `<ul>${sb.relevantPoints.map(p => `<li>${p}</li>`).join('')}</ul>` : ''}
+            <p><strong>요청:</strong> ${sb.callToAction || ''}</p>
+          </div>`);
+        });
+      }
+      if (doc.talkingPoints?.length) {
+        sections.push(`<div class="doc-section">
+          <h4>🎤 발표 포인트</h4>
+          <ul>${doc.talkingPoints.map(p => `<li>${p}</li>`).join('')}</ul>
+        </div>`);
+      }
+      if (doc.doNotMention?.length) {
+        sections.push(`<div class="doc-section">
+          <h4>🚫 언급 금지</h4>
+          <ul>${doc.doNotMention.map(p => `<li>${p}</li>`).join('')}</ul>
+        </div>`);
+      }
     }
-    if (doc.solution) {
+
+    // 공통 objectionHandling (data에서 가져옴)
+    if (data.objectionHandling?.length) {
       sections.push(`<div class="doc-section">
-        <h4>💡 Solution</h4>
-        <p>${doc.solution}</p>
-      </div>`);
-    }
-    if (doc.features || doc.userStories) {
-      const features = doc.features || doc.userStories || [];
-      sections.push(`<div class="doc-section">
-        <h4>✨ Features</h4>
-        <div class="feature-grid">${(Array.isArray(features) ? features : [features]).map(f => `
-          <div class="feature-item">
-            <strong>${typeof f === 'object' ? (f.title || f.story || 'Feature') : f}</strong>
-            <span>${typeof f === 'object' ? (f.description || f.acceptance || '') : ''}</span>
-          </div>
-        `).join('')}</div>
-      </div>`);
-    }
-    if (doc.expectedOutcome || doc.investment) {
-      sections.push(`<div class="doc-section">
-        <h4>📈 Expected Outcome</h4>
-        <p>${doc.expectedOutcome || ''}</p>
-        ${doc.investment ? `<p><strong>Investment:</strong> ${doc.investment}</p>` : ''}
-      </div>`);
-    }
-    if (doc.risks) {
-      sections.push(`<div class="doc-section">
-        <h4>⚠️ Risks</h4>
-        <p>${typeof doc.risks === 'string' ? doc.risks : JSON.stringify(doc.risks)}</p>
-      </div>`);
-    }
-    if (doc.objectionHandling) {
-      sections.push(`<div class="doc-section">
-        <h4>💬 Q&A</h4>
-        <ul>${doc.objectionHandling.map(qa => `<li><strong>Q:</strong> ${qa.question}<br><strong>A:</strong> ${qa.answer}</li>`).join('')}</ul>
+        <h4>💬 예상 Q&A</h4>
+        <ul>${data.objectionHandling.map(qa => `<li><strong>Q:</strong> ${qa.question}<br><strong>A:</strong> ${qa.answer}</li>`).join('')}</ul>
       </div>`);
     }
 
