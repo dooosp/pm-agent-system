@@ -139,18 +139,6 @@ app.get('/api/export/:sessionId', (req, res) => {
   }
 });
 
-// Debug: API Key 상태 확인 (배포 후 삭제)
-app.get('/api/debug/env', (req, res) => {
-  const key = config.GEMINI_API_KEY || '';
-  res.json({
-    keyLength: key.length,
-    keyPrefix: key.substring(0, 4),
-    keySuffix: key.slice(-4),
-    model: config.GEMINI_MODEL,
-    hasKey: key.length > 0
-  });
-});
-
 // Start server
 const apiKey = config.GEMINI_API_KEY || '';
 console.log(`[Config] GEMINI_API_KEY: length=${apiKey.length}, prefix="${apiKey.substring(0, 4)}...", suffix="...${apiKey.slice(-4)}"`);
