@@ -63,7 +63,12 @@ JSON으로 반환:
     return result;
   } catch (error) {
     console.error('[Prioritizer] Error:', error.message);
-    return { initiatives: [] };
+    console.error('[Prioritizer] Stack:', error.stack);
+    // 빈 배열 대신 에러 정보를 포함한 기본 이니셔티브 생성
+    return {
+      initiatives: [],
+      error: `이니셔티브 생성 실패: ${error.message}`
+    };
   }
 }
 

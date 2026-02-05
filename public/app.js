@@ -188,16 +188,26 @@ function formatData(tab, data) {
     </div>`;
   }
 
-  if (tab === 'planning' && data.initiatives) {
-    return `<div class="formatted">
-      <h4>📐 이니셔티브: ${data.initiatives.length}개</h4>
-      ${data.initiatives.map(i => `
+  if (tab === 'planning') {
+    const initiatives = data.initiatives || [];
+    const errors = data.errors || [];
+    const errorHtml = errors.length > 0
+      ? `<div class="error-banner">⚠️ ${errors.join(', ')}</div>`
+      : '';
+    const initiativesHtml = initiatives.length > 0
+      ? initiatives.map(i => `
         <div class="initiative-card ${i.priority}">
           <strong>${i.priority} | ${i.title}</strong>
           <p>${i.description || ''}</p>
           <span class="rice">RICE: ${i.rice?.score || 'N/A'}</span>
         </div>
-      `).join('')}
+      `).join('')
+      : '<p class="no-data">이니셔티브가 없습니다. Gemini API 오류일 수 있습니다.</p>';
+
+    return `<div class="formatted">
+      ${errorHtml}
+      <h4>📐 이니셔티브: ${initiatives.length}개</h4>
+      ${initiativesHtml}
       <h4>🗓 로드맵</h4>
       <pre>${JSON.stringify(data.roadmap || {}, null, 2)}</pre>
     </div>`;
@@ -224,6 +234,12 @@ document.querySelectorAll('.tab').forEach(tab => {
 async function generateDoc(type) { // eslint-disable-line no-unused-vars
   if (!currentSession) return alert('먼저 분석을 실행하세요');
 
+  // initiatives 존재 여부 확인
+  const initiatives = currentSession.planningResult?.initiatives || [];
+  if (initiatives.length === 0) {
+    return alert('이니셔티브가 없습니다. Planning 탭에서 결과를 확인하세요.\n(Gemini API 오류로 이니셔티브 생성이 실패했을 수 있습니다)');
+  }
+
   const btn = event.target.closest('button');
   const allDocBtns = document.querySelectorAll('.doc-buttons button');
   allDocBtns.forEach(b => b.disabled = true);
@@ -231,9 +247,8 @@ async function generateDoc(type) { // eslint-disable-line no-unused-vars
   if (originalTitle) originalTitle.textContent = '생성 중...';
 
   try {
-    const body = currentSession.sessionId
-      ? { sessionId: currentSession.sessionId, documentType: type }
-      : { planningResult: currentSession.planningResult, documentType: type };
+    // 항상 planningResult 직접 전달 (세션 만료 문제 방지)
+    const body = { planningResult: currentSession.planningResult, documentType: type };
 
     const response = await fetch(`${API_BASE}/api/generate-document`, {
       method: 'POST',

@@ -23,8 +23,10 @@ async function execute(analysisResult) {
 
   // Step 2: 이니셔티브 우선순위 (RICE)
   console.log('[Planning Agent] Step 2: Prioritizing initiatives...');
-  const { initiatives } = await prioritizeInitiatives(problems, insights);
-  console.log(`[Planning Agent] Generated ${initiatives.length} initiatives`);
+  const priorityResult = await prioritizeInitiatives(problems, insights);
+  const initiatives = priorityResult.initiatives || [];
+  const initiativeError = priorityResult.error || null;
+  console.log(`[Planning Agent] Generated ${initiatives.length} initiatives${initiativeError ? ` (Error: ${initiativeError})` : ''}`);
 
   // Step 3: 로드맵 생성
   console.log('[Planning Agent] Step 3: Generating roadmap...');
@@ -49,7 +51,8 @@ async function execute(analysisResult) {
         r.riskLevel === 'critical' || r.riskLevel === 'high'
       ).length,
       quickWinCount: roadmap.quickWins?.length || 0
-    }
+    },
+    errors: initiativeError ? [initiativeError] : []
   };
 
   console.log(`[Planning Agent] Complete in ${result.processingTime}ms`);
