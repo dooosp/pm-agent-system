@@ -163,26 +163,46 @@ function formatData(tab, data) {
   if (tab === 'input' && data.items) {
     return `<div class="formatted">
       <h4>📊 수집 결과: ${data.items.length}개 뉴스</h4>
-      <ul>${data.items.map(item => `
-        <li>
-          <strong>${item.title}</strong>
-          <span class="tags">${(item.tags || []).map(t => `<span class="tag">${t}</span>`).join('')}</span>
-          <span class="score">관련도: ${(item.relevanceScore * 100).toFixed(0)}%</span>
-        </li>
-      `).join('')}</ul>
+      <div class="news-grid">${data.items.map(item => {
+        const score = (item.relevanceScore * 100).toFixed(0);
+        const level = score >= 80 ? 'high' : score >= 50 ? 'medium' : 'low';
+        return `
+        <div class="news-card">
+          <div class="news-header">
+            <span class="relevance-badge ${level}">${score}%</span>
+          </div>
+          <h5 class="news-title">${item.title}</h5>
+          <div class="tags">${(item.tags || []).map(t => `<span class="tag">${t}</span>`).join('')}</div>
+          <p class="news-source">${item.source || ''}</p>
+        </div>`;
+      }).join('')}</div>
     </div>`;
   }
 
   if (tab === 'analysis' && data.problems) {
     return `<div class="formatted">
       <h4>🧠 분석된 문제: ${data.problems.length}개</h4>
-      ${data.problems.map(p => `
-        <div class="problem-card">
-          <strong>${p.id}: ${p.problem}</strong>
-          <p><em>근본 원인:</em> ${p.rootCause || 'N/A'}</p>
-          <p><em>긴급도:</em> ${p.impact?.urgency || 'N/A'} | <em>점수:</em> ${p.impact?.score || 'N/A'}/10</p>
-        </div>
-      `).join('')}
+      ${data.problems.map(p => {
+        const urgency = p.impact?.urgency || 'medium';
+        const score = p.impact?.score || 0;
+        return `
+        <div class="problem-card enhanced">
+          <div class="problem-header">
+            <span class="problem-id">${p.id}</span>
+            <span class="urgency-badge ${urgency.toLowerCase()}">${urgency}</span>
+          </div>
+          <h5 class="news-title">${p.problem}</h5>
+          <div class="rca-chain">
+            <div class="rca-node symptom">${p.problem}</div>
+            <span class="rca-arrow">→</span>
+            <div class="rca-node root">${p.rootCause || 'N/A'}</div>
+          </div>
+          <div class="impact-bar">
+            <div class="impact-track"><div class="impact-fill" style="width: ${score * 10}%"></div></div>
+            <span class="impact-score">${score}/10</span>
+          </div>
+        </div>`;
+      }).join('')}
       <h4>💡 인사이트</h4>
       <ul>${(data.insights || []).map(i => `<li>${i}</li>`).join('')}</ul>
     </div>`;
@@ -191,6 +211,7 @@ function formatData(tab, data) {
   if (tab === 'planning') {
     const initiatives = data.initiatives || [];
     const errors = data.errors || [];
+    const roadmap = data.roadmap || {};
     const errorHtml = errors.length > 0
       ? `<div class="error-banner">⚠️ ${errors.join(', ')}</div>`
       : '';
@@ -204,21 +225,92 @@ function formatData(tab, data) {
       `).join('')
       : '<p class="no-data">이니셔티브가 없습니다. Gemini API 오류일 수 있습니다.</p>';
 
+    const quarters = Object.keys(roadmap);
+    const roadmapHtml = quarters.length > 0
+      ? `<table class="roadmap-table">
+          <thead><tr><th>분기</th><th>마일스톤</th></tr></thead>
+          <tbody>${quarters.map(q => `
+            <tr>
+              <td><span class="quarter-badge">${q}</span></td>
+              <td>${Array.isArray(roadmap[q]) ? roadmap[q].join(', ') : roadmap[q]}</td>
+            </tr>
+          `).join('')}</tbody>
+        </table>`
+      : '<p class="no-data">로드맵 정보 없음</p>';
+
     return `<div class="formatted">
       ${errorHtml}
       <h4>📐 이니셔티브: ${initiatives.length}개</h4>
       ${initiativesHtml}
       <h4>🗓 로드맵</h4>
-      <pre>${JSON.stringify(data.roadmap || {}, null, 2)}</pre>
+      ${roadmapHtml}
     </div>`;
   }
 
   if (tab === 'output' && data.document) {
     const doc = data.document;
+    const sections = [];
+
+    if (doc.executiveSummary || doc.summary) {
+      sections.push(`<div class="doc-section highlight">
+        <h4>📋 Executive Summary</h4>
+        <p>${doc.executiveSummary || doc.summary}</p>
+      </div>`);
+    }
+    if (doc.problem) {
+      sections.push(`<div class="doc-section">
+        <h4>🔍 Problem</h4>
+        <p>${doc.problem}</p>
+      </div>`);
+    }
+    if (doc.goals || doc.objectives) {
+      const goals = doc.goals || doc.objectives || [];
+      sections.push(`<div class="doc-section">
+        <h4>🎯 Goals</h4>
+        <ul>${(Array.isArray(goals) ? goals : [goals]).map(g => `<li>${typeof g === 'object' ? g.description || JSON.stringify(g) : g}</li>`).join('')}</ul>
+      </div>`);
+    }
+    if (doc.solution) {
+      sections.push(`<div class="doc-section">
+        <h4>💡 Solution</h4>
+        <p>${doc.solution}</p>
+      </div>`);
+    }
+    if (doc.features || doc.userStories) {
+      const features = doc.features || doc.userStories || [];
+      sections.push(`<div class="doc-section">
+        <h4>✨ Features</h4>
+        <div class="feature-grid">${(Array.isArray(features) ? features : [features]).map(f => `
+          <div class="feature-item">
+            <strong>${typeof f === 'object' ? (f.title || f.story || 'Feature') : f}</strong>
+            <span>${typeof f === 'object' ? (f.description || f.acceptance || '') : ''}</span>
+          </div>
+        `).join('')}</div>
+      </div>`);
+    }
+    if (doc.expectedOutcome || doc.investment) {
+      sections.push(`<div class="doc-section">
+        <h4>📈 Expected Outcome</h4>
+        <p>${doc.expectedOutcome || ''}</p>
+        ${doc.investment ? `<p><strong>Investment:</strong> ${doc.investment}</p>` : ''}
+      </div>`);
+    }
+    if (doc.risks) {
+      sections.push(`<div class="doc-section">
+        <h4>⚠️ Risks</h4>
+        <p>${typeof doc.risks === 'string' ? doc.risks : JSON.stringify(doc.risks)}</p>
+      </div>`);
+    }
+    if (doc.objectionHandling) {
+      sections.push(`<div class="doc-section">
+        <h4>💬 Q&A</h4>
+        <ul>${doc.objectionHandling.map(qa => `<li><strong>Q:</strong> ${qa.question}<br><strong>A:</strong> ${qa.answer}</li>`).join('')}</ul>
+      </div>`);
+    }
+
     return `<div class="formatted document">
       <h3>${doc.title || '문서'}</h3>
-      ${doc.executiveSummary ? `<p class="summary">${doc.executiveSummary}</p>` : ''}
-      <pre>${JSON.stringify(doc, null, 2)}</pre>
+      <div class="doc-sections">${sections.length > 0 ? sections.join('') : `<pre>${JSON.stringify(doc, null, 2)}</pre>`}</div>
     </div>`;
   }
 

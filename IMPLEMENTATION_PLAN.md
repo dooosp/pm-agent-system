@@ -532,3 +532,51 @@ cd /home/taeho/pm-agent-system
 npm start
 # http://localhost:3002 에서 접속
 ```
+
+---
+
+## 13. 결과창 UI 개선 (2026-02-05)
+
+> **Status**: 🔄 설계 승인 대기
+
+### 현재 상태
+| 탭 | 현재 | 문제점 |
+|----|------|--------|
+| Input | `<ul><li>` 리스트 | 카드 느낌 부족 |
+| Analysis | problem-card | RCA 시각화 없음 |
+| Planning | initiative-card + `JSON.stringify(roadmap)` | 로드맵 JSON 덤프 |
+| Output | executiveSummary + `JSON.stringify(doc)` | 문서 전체 JSON 덤프 |
+
+### 개선 설계
+
+#### 1. Input 탭 (뉴스 카드 그리드)
+- 2열 그리드 레이아웃
+- 관련도 뱃지 (high/medium/low 색상)
+- 태그 칩 스타일
+
+#### 2. Analysis 탭 (RCA 시각화)
+- 문제→원인 화살표 체인
+- 영향도 게이지 바
+- 긴급도 뱃지
+
+#### 3. Planning 탭 (로드맵 테이블)
+- 분기별 테이블 (`Q1|Q2|Q3|Q4`)
+- 이니셔티브 연결
+
+#### 4. Output 탭 (섹션별 카드)
+- Summary, Goals, Features, Timeline 등 분리
+- PRD/One-Pager/Briefing 공통 구조
+
+### 수정 파일
+| 파일 | 변경 | 예상 추가 줄 |
+|------|------|-------------|
+| `public/app.js` | formatData() 4개 탭 | +80 |
+| `public/components.css` | 새 컴포넌트 스타일 | +120 |
+
+### 구현 단계
+1. CSS 스타일 추가 (components.css)
+2. JS formatData 수정 (app.js)
+3. Demo 데이터로 검증
+
+### 승인 요청
+위 설계대로 진행해도 될까요? (LGTM/수정 요청)
