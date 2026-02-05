@@ -268,6 +268,7 @@ function formatData(tab, data) {
     const docType = data.documentType || '';
     const sections = [];
 
+    try {
     // PRD 문서
     if (docType === 'prd') {
       if (doc.overview) {
@@ -275,7 +276,7 @@ function formatData(tab, data) {
           <h4>📋 개요</h4>
           <p><strong>문제:</strong> ${doc.overview.problem || ''}</p>
           <p><strong>솔루션:</strong> ${doc.overview.solution || ''}</p>
-          ${doc.overview.goals ? `<p><strong>목표:</strong> ${doc.overview.goals.join(', ')}</p>` : ''}
+          ${doc.overview.goals?.length ? `<p><strong>목표:</strong> ${doc.overview.goals.join(', ')}</p>` : ''}
         </div>`);
       }
       if (doc.successMetrics?.length) {
@@ -284,7 +285,7 @@ function formatData(tab, data) {
           <table class="roadmap-table">
             <thead><tr><th>지표</th><th>현재</th><th>목표</th></tr></thead>
             <tbody>${doc.successMetrics.map(m => `
-              <tr><td>${m.metric}</td><td>${m.current}</td><td>${m.target}</td></tr>
+              <tr><td>${m.metric || ''}</td><td>${m.current || ''}</td><td>${m.target || ''}</td></tr>
             `).join('')}</tbody>
           </table>
         </div>`);
@@ -294,8 +295,8 @@ function formatData(tab, data) {
           <h4>👤 User Stories</h4>
           <div class="feature-grid">${doc.userStories.map(us => `
             <div class="feature-item">
-              <strong>${us.id} [${us.priority}]</strong>
-              <span>${us.story}</span>
+              <strong>${us.id || ''} [${us.priority || ''}]</strong>
+              <span>${us.story || ''}</span>
             </div>
           `).join('')}</div>
         </div>`);
@@ -307,13 +308,22 @@ function formatData(tab, data) {
           <p><strong>제외:</strong> ${(doc.scope.outOfScope || []).join(', ')}</p>
         </div>`);
       }
+      if (doc.technicalRequirements) {
+        const tech = doc.technicalRequirements;
+        sections.push(`<div class="doc-section">
+          <h4>🔧 기술 요구사항</h4>
+          ${tech.architecture ? `<p><strong>아키텍처:</strong> ${tech.architecture}</p>` : ''}
+          ${tech.integrations?.length ? `<p><strong>연동:</strong> ${tech.integrations.join(', ')}</p>` : ''}
+          ${tech.constraints?.length ? `<p><strong>제약:</strong> ${tech.constraints.join(', ')}</p>` : ''}
+        </div>`);
+      }
       if (doc.timeline?.phases?.length) {
         sections.push(`<div class="doc-section">
           <h4>📅 타임라인</h4>
           <table class="roadmap-table">
             <thead><tr><th>단계</th><th>기간</th><th>산출물</th></tr></thead>
             <tbody>${doc.timeline.phases.map(p => `
-              <tr><td>${p.phase}</td><td>${p.duration || ''}</td><td>${(p.deliverables || []).join(', ')}</td></tr>
+              <tr><td>${p.phase || ''}</td><td>${p.duration || ''}</td><td>${(p.deliverables || []).join(', ')}</td></tr>
             `).join('')}</tbody>
           </table>
         </div>`);
@@ -413,11 +423,11 @@ function formatData(tab, data) {
       }
     }
 
-    // 공통 objectionHandling (data에서 가져옴)
-    if (data.objectionHandling?.length) {
+    // 공통 objectionHandling (배열 형식)
+    if (Array.isArray(data.objectionHandling) && data.objectionHandling.length) {
       sections.push(`<div class="doc-section">
         <h4>💬 예상 Q&A</h4>
-        <ul>${data.objectionHandling.map(qa => `<li><strong>Q:</strong> ${qa.question}<br><strong>A:</strong> ${qa.answer}</li>`).join('')}</ul>
+        <ul>${data.objectionHandling.map(qa => `<li><strong>Q:</strong> ${qa.question || ''}<br><strong>A:</strong> ${qa.answer || ''}</li>`).join('')}</ul>
       </div>`);
     }
 
@@ -425,6 +435,10 @@ function formatData(tab, data) {
       <h3>${doc.title || '문서'}</h3>
       <div class="doc-sections">${sections.length > 0 ? sections.join('') : `<pre>${JSON.stringify(doc, null, 2)}</pre>`}</div>
     </div>`;
+    } catch (e) {
+      console.error('Output 렌더링 오류:', e);
+      return `<div class="error-banner">렌더링 오류: ${e.message}</div><pre>${JSON.stringify(data, null, 2)}</pre>`;
+    }
   }
 
   return `<pre>${JSON.stringify(data, null, 2)}</pre>`;
