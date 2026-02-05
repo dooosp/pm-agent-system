@@ -32,7 +32,7 @@ header h1 {
 }
 
 .subtitle {
-  color: #888;
+  color: #aaa;
   margin-top: 8px;
 }
 
@@ -50,21 +50,41 @@ header h1 {
 .input-group input {
   flex: 1;
   padding: 16px 20px;
-  border: 2px solid #555;
+  border: 2px solid #666;
   border-radius: 12px;
-  background: #222240;
+  background: #2a2a48;
   color: #fff;
   font-size: 1rem;
 }
 
 .input-group input::placeholder {
-  color: #666;
+  color: #999;
 }
 
 .input-hint {
   margin-top: 8px;
-  color: #555;
+  color: #999;
   font-size: 0.85rem;
+}
+
+.cancel-btn {
+  padding: 16px 24px;
+  border: 2px solid #ff4757;
+  border-radius: 12px;
+  background: transparent;
+  color: #ff4757;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.cancel-btn:hover {
+  background: #ff4757;
+  color: #fff;
+}
+
+.cancel-btn:focus {
+  box-shadow: 0 0 0 3px rgba(255, 71, 87, 0.4);
 }
 
 .input-group input:focus {
@@ -156,7 +176,7 @@ header h1 {
 
 .preview-step .icon { font-size: 1.5rem; }
 .preview-step .label { color: #00d9ff; font-weight: bold; font-size: 0.85rem; }
-.preview-step .desc { color: #666; font-size: 0.75rem; }
+.preview-step .desc { color: #aaa; font-size: 0.75rem; }
 
 .preview-arrow {
   color: #00ff88;
@@ -353,7 +373,7 @@ header h1 {
 
 .doc-buttons button .doc-card-desc {
   font-size: 0.8rem;
-  color: #888;
+  color: #aaa;
 }
 
 /* Results */

@@ -5,6 +5,7 @@ const API_BASE = location.hostname === 'localhost' || location.hostname === '127
 
 let currentSession = null;
 let currentTab = 'input'; // eslint-disable-line no-unused-vars
+let analyzeController = null;
 
 // Analyze
 async function analyze() { // eslint-disable-line no-unused-vars
@@ -13,9 +14,13 @@ async function analyze() { // eslint-disable-line no-unused-vars
 
   const btn = document.getElementById('analyzeBtn');
   const demoBtn = document.getElementById('demoBtn');
+  const cancelBtn = document.getElementById('cancelBtn');
   btn.disabled = true;
   btn.textContent = '분석 중...';
   if (demoBtn) demoBtn.disabled = true;
+  if (cancelBtn) cancelBtn.classList.remove('hidden');
+
+  analyzeController = new AbortController();
 
   showProgress();
   setStep(1);
@@ -31,7 +36,8 @@ async function analyze() { // eslint-disable-line no-unused-vars
     const response = await fetch(`${API_BASE}/api/analyze`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query })
+      body: JSON.stringify({ query }),
+      signal: analyzeController.signal
     });
 
     const data = await response.json();
@@ -45,13 +51,23 @@ async function analyze() { // eslint-disable-line no-unused-vars
 
   } catch (error) {
     clearInterval(stepTimer);
-    alert('오류: ' + error.message);
+    if (error.name !== 'AbortError') {
+      alert('오류: ' + error.message);
+    }
     hideProgress();
+    document.getElementById('feature-preview').classList.remove('hidden');
   } finally {
+    analyzeController = null;
     btn.disabled = false;
     btn.textContent = '분석 시작';
     if (demoBtn) demoBtn.disabled = false;
+    if (cancelBtn) cancelBtn.classList.add('hidden');
   }
+}
+
+// Cancel
+function cancelAnalysis() { // eslint-disable-line no-unused-vars
+  if (analyzeController) analyzeController.abort();
 }
 
 // Progress
