@@ -20,11 +20,16 @@ async function analyze() { // eslint-disable-line no-unused-vars
   showProgress();
   setStep(1);
 
-  try {
-    // 단계별 프로그레스 시뮬레이션
-    setTimeout(() => setStep(2), 2000);
-    setTimeout(() => setStep(3), 5000);
+  // 3초 간격으로 step 1→2→3 순환 (API 응답 전까지)
+  let currentStepNum = 1;
+  const stepTimer = setInterval(() => {
+    if (currentStepNum < 3) {
+      currentStepNum++;
+      setStep(currentStepNum);
+    }
+  }, 3000);
 
+  try {
     const response = await fetch(`${API_BASE}/api/analyze`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -34,12 +39,14 @@ async function analyze() { // eslint-disable-line no-unused-vars
     const data = await response.json();
     if (!data.success) throw new Error(data.error || 'API 오류');
 
+    clearInterval(stepTimer);
     currentSession = data;
     setStep(4);
     showResults();
     renderTab('input');
 
   } catch (error) {
+    clearInterval(stepTimer);
     alert('오류: ' + error.message);
     hideProgress();
   } finally {
