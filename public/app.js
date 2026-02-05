@@ -45,7 +45,7 @@ async function analyze() { // eslint-disable-line no-unused-vars
 
     clearInterval(stepTimer);
     currentSession = data;
-    setStep(4);
+    setStep(5); // 모든 스텝 done 처리
     showResults();
     renderTab('input');
 
