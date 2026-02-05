@@ -25,6 +25,17 @@ async function analyze() { // eslint-disable-line no-unused-vars
   showProgress();
   setStep(1);
 
+  // 경과 시간 카운터
+  const startTime = Date.now();
+  const infoEl = document.getElementById('progress-info');
+  const elapsedTimer = setInterval(() => {
+    const sec = Math.floor((Date.now() - startTime) / 1000);
+    const msg = sec < 10
+      ? `분석 진행 중... ${sec}초`
+      : `서버 응답 대기 중... ${sec}초 (최초 접속 시 30초 이상 소요)`;
+    if (infoEl) infoEl.textContent = msg;
+  }, 1000);
+
   // 3초 간격으로 step 1→2→3→1→2→3... 순환 (API 응답 전까지)
   let currentStepNum = 1;
   const stepTimer = setInterval(() => {
@@ -44,13 +55,17 @@ async function analyze() { // eslint-disable-line no-unused-vars
     if (!data.success) throw new Error(data.error || 'API 오류');
 
     clearInterval(stepTimer);
+    clearInterval(elapsedTimer);
+    if (infoEl) infoEl.textContent = '';
     currentSession = data;
-    setStep(5); // 모든 스텝 done 처리
+    setStep(5);
     showResults();
     renderTab('input');
 
   } catch (error) {
     clearInterval(stepTimer);
+    clearInterval(elapsedTimer);
+    if (infoEl) infoEl.textContent = '';
     if (error.name !== 'AbortError') {
       alert('오류: ' + error.message);
     }

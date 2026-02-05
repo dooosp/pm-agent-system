@@ -262,6 +262,13 @@ header h1 {
   min-height: 1.2em;
 }
 
+.progress-info {
+  text-align: center;
+  margin-top: 16px;
+  color: #888;
+  font-size: 0.85rem;
+}
+
 .progress-step.active .status-text {
   color: #00d9ff;
   animation: blink 1.2s ease-in-out infinite;
