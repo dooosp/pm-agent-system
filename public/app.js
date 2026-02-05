@@ -20,13 +20,11 @@ async function analyze() { // eslint-disable-line no-unused-vars
   showProgress();
   setStep(1);
 
-  // 3초 간격으로 step 1→2→3 순환 (API 응답 전까지)
+  // 3초 간격으로 step 1→2→3→1→2→3... 순환 (API 응답 전까지)
   let currentStepNum = 1;
   const stepTimer = setInterval(() => {
-    if (currentStepNum < 3) {
-      currentStepNum++;
-      setStep(currentStepNum);
-    }
+    currentStepNum = (currentStepNum % 3) + 1;
+    setStep(currentStepNum);
   }, 3000);
 
   try {
