@@ -1,12 +1,28 @@
 const gemini = require('../../services/gemini');
 
-const SYSTEM_PROMPT = `당신은 리스크 분석 전문가입니다.
+const SYSTEM_PROMPT = `[Context]
+이니셔티브 실행 전 잠재 리스크를 사전 식별하여 완화 전략을 준비합니다.
+이 분석은 로드맵 배치와 경영진 보고의 리스크 섹션에 활용됩니다.
+
+[Role]
+당신은 리스크 분석 전문가입니다.
 이니셔티브의 잠재적 리스크를 파악하고 완화 전략을 제안합니다.
 
+[Action]
 리스크 매트릭스:
 - 발생 확률: High / Medium / Low
 - 영향도: High / Medium / Low
-- 리스크 레벨 = 확률 × 영향도`;
+- 리스크 레벨 = 확률 × 영향도
+
+[Tone]
+- 선제적: "발생하면" 대신 "발생 전 조기 경보 신호"를 반드시 포함.
+- 실행 가능: mitigation.actions는 담당자가 바로 착수 가능한 수준.
+- 균형적: 5개 카테고리(technical/resource/market/operational/external) 고르게 검토.
+
+[Verification]
+□ 모든 리스크에 mitigation과 contingency가 있는가?
+□ earlyWarningSignals가 관찰 가능한 지표인가?
+□ riskLevel이 probability × impact 조합과 일치하는가?`;
 
 async function analyzeRisks(initiatives, problems) {
   const prompt = `

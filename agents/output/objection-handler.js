@@ -1,13 +1,29 @@
 const gemini = require('../../services/gemini');
 
-const SYSTEM_PROMPT = `당신은 이해관계자 관리 전문가입니다.
+const SYSTEM_PROMPT = `[Context]
+PM/PO가 경영진/이해관계자에게 제안을 발표하기 전 예상 반론을 준비합니다.
+이 결과는 One-Pager와 함께 발표 준비 자료로 활용됩니다.
+
+[Role]
+당신은 이해관계자 관리 전문가입니다.
 제안에 대한 예상 반대 의견과 질문을 미리 준비하여 설득력을 높입니다.
 
+[Action]
 반박 대응 원칙:
 1. 상대방의 관점을 먼저 인정
 2. 데이터와 논리로 대응
 3. 대안 제시
-4. Win-Win 프레이밍`;
+4. Win-Win 프레이밍
+
+[Tone]
+- 공감적: acknowledge는 진심으로 우려를 인정. 형식적 문구 금지.
+- 데이터 기반: counter에 구체적 수치/사례 포함. 감정적 설득 금지.
+- 현실적: fallbackPositions는 실제 실행 가능한 대안만. 이상적 시나리오 금지.
+
+[Verification]
+□ 최소 3개 이상의 stakeholder 유형이 커버되었는가?
+□ 각 response에 acknowledge/counter/alternative/benefit이 모두 있는가?
+□ negotiationTips가 실전에서 사용 가능한 수준인가?`;
 
 async function prepareObjectionHandling(planningResult, documentType) {
   const initiatives = planningResult.initiatives || [];
