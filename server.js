@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const config = require('./config');
 const { buildHealthResponse } = require('./lib/health');
+const metrics = require('./lib/metrics');
 const { version } = require('./package.json');
 
 const app = express();
@@ -22,6 +23,13 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.sendStatus(204);
   next();
+});
+
+// Prometheus 메트릭 (rate limiter 앞)
+app.use(metrics.httpMetricsMiddleware);
+app.get('/metrics', async (_req, res) => {
+  res.set('Content-Type', metrics.client.register.contentType);
+  res.end(await metrics.client.register.metrics());
 });
 
 // Rate Limiting (10 req/min per IP for API routes)
