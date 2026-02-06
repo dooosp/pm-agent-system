@@ -1,3 +1,8 @@
+function escapeMarkdown(str) {
+  if (typeof str !== 'string') return String(str || '');
+  return str.replace(/\|/g, '\\|').replace(/`/g, '\\`');
+}
+
 function toMarkdown(documentType, document, objectionHandling) {
   switch (documentType) {
     case 'prd': return prdToMarkdown(document);
@@ -29,7 +34,7 @@ function prdToMarkdown(doc) {
     lines.push('| Metric | Current | Target | Measurement |');
     lines.push('|--------|---------|--------|-------------|');
     doc.successMetrics.forEach(m =>
-      lines.push(`| ${m.metric} | ${m.current} | ${m.target} | ${m.measurement} |`)
+      lines.push(`| ${escapeMarkdown(m.metric)} | ${escapeMarkdown(m.current)} | ${escapeMarkdown(m.target)} | ${escapeMarkdown(m.measurement)} |`)
     );
     lines.push('');
   }
@@ -39,7 +44,7 @@ function prdToMarkdown(doc) {
     doc.userStories.forEach(us => {
       lines.push(`### ${us.id} [${us.priority || 'P1'}]`);
       lines.push(`**Persona:** ${us.persona}`);
-      lines.push(`> ${us.story}`);
+      lines.push(`> ${escapeMarkdown(us.story)}`);
       if (us.acceptanceCriteria?.length) {
         lines.push('**Acceptance Criteria:**');
         us.acceptanceCriteria.forEach(ac => lines.push(`- [ ] ${ac}`));

@@ -10,8 +10,9 @@ const PERSONA = `
 - 비즈니스 임팩트 없는 정보는 필터링한다
 `;
 
-// 입력 캐시 (query → { value, expiresAt })
+// 입력 캐시 (query → { value, expiresAt }), LRU 제한
 const inputCache = new Map();
+const MAX_CACHE_SIZE = 100;
 
 function getCached(query) {
   const key = query.trim().toLowerCase();
@@ -25,6 +26,10 @@ function getCached(query) {
 
 function setCache(query, value) {
   const key = query.trim().toLowerCase();
+  if (inputCache.size >= MAX_CACHE_SIZE) {
+    const oldestKey = inputCache.keys().next().value;
+    inputCache.delete(oldestKey);
+  }
   inputCache.set(key, { value, expiresAt: Date.now() + config.agents.input.cacheTTL });
 }
 

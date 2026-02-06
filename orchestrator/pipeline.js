@@ -50,6 +50,7 @@ class Pipeline {
 
   _deleteSessionFile(sessionId) {
     try {
+      this._validateSessionId(sessionId);
       fs.unlinkSync(path.join(SESSIONS_DIR, `${sessionId}.json`));
     } catch (_) { /* ignore */ }
   }
@@ -129,7 +130,14 @@ class Pipeline {
     return await outputAgent.execute(planningResult, documentType);
   }
 
+  _validateSessionId(sessionId) {
+    if (typeof sessionId !== 'string' || !/^[a-zA-Z0-9_-]+$/.test(sessionId)) {
+      throw new Error(`Invalid session ID: ${sessionId}`);
+    }
+  }
+
   getSession(sessionId) {
+    this._validateSessionId(sessionId);
     const session = this.sessions.get(sessionId);
     if (session && Date.now() - new Date(session.createdAt).getTime() > config.session.ttl) {
       this.sessions.delete(sessionId);
