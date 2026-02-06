@@ -110,6 +110,9 @@ class Pipeline {
       throw new Error('Session not found');
     }
 
+    if (!session.planningResult) {
+      throw new Error('Planning phase not completed - no planningResult available');
+    }
     console.log(`[Pipeline] Generating ${documentType} document`);
     const outputResult = await outputAgent.execute(
       session.planningResult,

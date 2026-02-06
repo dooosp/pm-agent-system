@@ -29,7 +29,7 @@ async function analyzeRootCause(problem, context) {
 문제 상황: "${problem}"
 
 관련 정보:
-${context}
+${typeof context === 'string' ? context.substring(0, 2000) : JSON.stringify(context).substring(0, 2000)}
 
 5-Why 분석을 수행하여 JSON으로 반환하세요:
 {
