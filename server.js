@@ -115,7 +115,7 @@ app.get('/api/demo', (req, res) => {
 });
 
 // Markdown Export
-app.get('/api/export/:sessionId', (req, res) => {
+app.get('/api/export/:sessionId', async (req, res) => {
   try {
     const { sessionId } = req.params;
     const pipeline = require('./orchestrator/pipeline');

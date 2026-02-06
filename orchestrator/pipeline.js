@@ -1,89 +1,41 @@
-const fs = require('fs');
-const path = require('path');
 const inputAgent = require('../agents/input');
 const analysisAgent = require('../agents/analysis');
 const planningAgent = require('../agents/planning');
 const outputAgent = require('../agents/output');
 const config = require('../config');
-
-const SESSIONS_DIR = path.join(__dirname, '..', 'data', 'sessions');
-const fsp = fs.promises;
+const sessionDb = require('../lib/session-db');
 
 class Pipeline {
   constructor() {
-    this.sessions = new Map();
-    this._ready = this._init();
-  }
+    // Proxy object for backward-compat with server.js `pipeline.sessions.set()`
+    this.sessions = {
+      set: (id, data) => sessionDb.saveSession(id, data),
+      get: (id) => sessionDb.getSession(id),
+      delete: (id) => sessionDb.deleteSession(id),
+      get size() { return sessionDb.count(); },
+    };
 
-  async _init() {
-    await fsp.mkdir(SESSIONS_DIR, { recursive: true });
-    await this._loadSessions();
-
-    // 주기적 세션 정리 (15분마다)
+    // Clean up expired sessions on startup + every 15 minutes
+    this.cleanupExpiredSessions();
     this._cleanupTimer = setInterval(() => this.cleanupExpiredSessions(), 15 * 60 * 1000);
     this._cleanupTimer.unref();
-  }
 
-  async _loadSessions() {
-    try {
-      const files = (await fsp.readdir(SESSIONS_DIR)).filter(f => f.endsWith('.json'));
-      const now = Date.now();
-      for (const file of files) {
-        try {
-          const data = JSON.parse(await fsp.readFile(path.join(SESSIONS_DIR, file), 'utf-8'));
-          if (now - new Date(data.createdAt).getTime() < config.session.ttl) {
-            this.sessions.set(data.id, data);
-          } else {
-            await fsp.unlink(path.join(SESSIONS_DIR, file)).catch(() => {});
-          }
-        } catch (e) {
-          console.warn(`[Pipeline] Failed to load session file ${file}:`, e.message);
-        }
-      }
-      if (this.sessions.size > 0) {
-        console.log(`[Pipeline] Loaded ${this.sessions.size} sessions from disk`);
-      }
-    } catch (err) {
-      if (err.code !== 'ENOENT') console.warn('[Pipeline] Session load error:', err.message);
+    const total = sessionDb.count();
+    if (total > 0) {
+      console.log(`[Pipeline] SQLite DB has ${total} sessions`);
     }
   }
 
-  async _saveSession(session) {
-    try {
-      const filePath = path.join(SESSIONS_DIR, `${session.id}.json`);
-      await fsp.writeFile(filePath, JSON.stringify(session, null, 2));
-    } catch (err) {
-      console.warn('[Pipeline] Session save error:', err.message);
-    }
-  }
-
-  async _deleteSessionFile(sessionId) {
-    try {
-      this._validateSessionId(sessionId);
-      await fsp.unlink(path.join(SESSIONS_DIR, `${sessionId}.json`));
-    } catch (_) { /* ignore */ }
-  }
-
-  async cleanupExpiredSessions() {
-    const now = Date.now();
+  cleanupExpiredSessions() {
     const ttl = config.session.ttl;
-    let removed = 0;
-
-    for (const [id, session] of this.sessions) {
-      if (now - new Date(session.createdAt).getTime() > ttl) {
-        this.sessions.delete(id);
-        await this._deleteSessionFile(id);
-        removed++;
-      }
-    }
-
+    const cutoff = new Date(Date.now() - ttl).toISOString();
+    const removed = sessionDb.deleteExpired(cutoff);
     if (removed > 0) {
       console.log(`[Pipeline] Cleaned up ${removed} expired sessions`);
     }
   }
 
   async runFullPipeline(query, sessionId) {
-    await this._ready;
     this.cleanupExpiredSessions();
     console.log(`[Pipeline] Starting full pipeline for: "${query}"`);
 
@@ -110,14 +62,12 @@ class Pipeline {
       outputResult: null
     };
 
-    this.sessions.set(sessionId, session);
-    await this._saveSession(session);
+    sessionDb.saveSession(sessionId, session);
     return session;
   }
 
   async generateDocument(sessionId, documentType) {
-    await this._ready;
-    const session = this.sessions.get(sessionId);
+    const session = sessionDb.getSession(sessionId);
     if (!session) {
       throw new Error('Session not found');
     }
@@ -132,7 +82,7 @@ class Pipeline {
     );
 
     session.outputResult = outputResult;
-    await this._saveSession(session);
+    sessionDb.saveSession(sessionId, session);
     return outputResult;
   }
 
@@ -148,12 +98,10 @@ class Pipeline {
   }
 
   async getSession(sessionId) {
-    await this._ready;
     this._validateSessionId(sessionId);
-    const session = this.sessions.get(sessionId);
+    const session = sessionDb.getSession(sessionId);
     if (session && Date.now() - new Date(session.createdAt).getTime() > config.session.ttl) {
-      this.sessions.delete(sessionId);
-      await this._deleteSessionFile(sessionId);
+      sessionDb.deleteSession(sessionId);
       return undefined;
     }
     return session;
