@@ -1,6 +1,8 @@
 const express = require('express');
 const path = require('path');
 const config = require('./config');
+const { buildHealthResponse } = require('./lib/health');
+const { version } = require('./package.json');
 
 const app = express();
 
@@ -137,6 +139,16 @@ app.get('/api/export/:sessionId', async (req, res) => {
     console.error('Export error:', error);
     res.status(500).json({ error: error.message });
   }
+});
+
+// Health check
+app.get('/health', (_req, res) => {
+  const sessionDb = require('./lib/session-db');
+  const response = buildHealthResponse('pm-agent-system', version, {
+    db: () => { sessionDb.count(); },
+    gemini_api: () => { if (!config.GEMINI_API_KEY) throw new Error('missing'); },
+  });
+  res.status(response.status === 'error' ? 503 : 200).json(response);
 });
 
 // Start server
