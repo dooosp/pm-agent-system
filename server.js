@@ -121,7 +121,7 @@ app.get('/api/export/:sessionId', (req, res) => {
     const pipeline = require('./orchestrator/pipeline');
     const { toMarkdown } = require('./services/markdown-exporter');
 
-    const session = pipeline.getSession(sessionId);
+    const session = await pipeline.getSession(sessionId);
     if (!session || !session.outputResult) {
       return res.status(404).json({ error: 'Session not found or no document generated' });
     }

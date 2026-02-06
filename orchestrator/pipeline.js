@@ -7,28 +7,37 @@ const outputAgent = require('../agents/output');
 const config = require('../config');
 
 const SESSIONS_DIR = path.join(__dirname, '..', 'data', 'sessions');
+const fsp = fs.promises;
 
 class Pipeline {
   constructor() {
     this.sessions = new Map();
-    fs.mkdirSync(SESSIONS_DIR, { recursive: true });
-    this._loadSessions();
+    this._ready = this._init();
+  }
+
+  async _init() {
+    await fsp.mkdir(SESSIONS_DIR, { recursive: true });
+    await this._loadSessions();
 
     // 주기적 세션 정리 (15분마다)
     this._cleanupTimer = setInterval(() => this.cleanupExpiredSessions(), 15 * 60 * 1000);
     this._cleanupTimer.unref();
   }
 
-  _loadSessions() {
+  async _loadSessions() {
     try {
-      const files = fs.readdirSync(SESSIONS_DIR).filter(f => f.endsWith('.json'));
+      const files = (await fsp.readdir(SESSIONS_DIR)).filter(f => f.endsWith('.json'));
       const now = Date.now();
       for (const file of files) {
-        const data = JSON.parse(fs.readFileSync(path.join(SESSIONS_DIR, file), 'utf-8'));
-        if (now - new Date(data.createdAt).getTime() < config.session.ttl) {
-          this.sessions.set(data.id, data);
-        } else {
-          fs.unlinkSync(path.join(SESSIONS_DIR, file));
+        try {
+          const data = JSON.parse(await fsp.readFile(path.join(SESSIONS_DIR, file), 'utf-8'));
+          if (now - new Date(data.createdAt).getTime() < config.session.ttl) {
+            this.sessions.set(data.id, data);
+          } else {
+            await fsp.unlink(path.join(SESSIONS_DIR, file)).catch(() => {});
+          }
+        } catch (e) {
+          console.warn(`[Pipeline] Failed to load session file ${file}:`, e.message);
         }
       }
       if (this.sessions.size > 0) {
@@ -39,23 +48,23 @@ class Pipeline {
     }
   }
 
-  _saveSession(session) {
+  async _saveSession(session) {
     try {
       const filePath = path.join(SESSIONS_DIR, `${session.id}.json`);
-      fs.writeFileSync(filePath, JSON.stringify(session, null, 2));
+      await fsp.writeFile(filePath, JSON.stringify(session, null, 2));
     } catch (err) {
       console.warn('[Pipeline] Session save error:', err.message);
     }
   }
 
-  _deleteSessionFile(sessionId) {
+  async _deleteSessionFile(sessionId) {
     try {
       this._validateSessionId(sessionId);
-      fs.unlinkSync(path.join(SESSIONS_DIR, `${sessionId}.json`));
+      await fsp.unlink(path.join(SESSIONS_DIR, `${sessionId}.json`));
     } catch (_) { /* ignore */ }
   }
 
-  cleanupExpiredSessions() {
+  async cleanupExpiredSessions() {
     const now = Date.now();
     const ttl = config.session.ttl;
     let removed = 0;
@@ -63,7 +72,7 @@ class Pipeline {
     for (const [id, session] of this.sessions) {
       if (now - new Date(session.createdAt).getTime() > ttl) {
         this.sessions.delete(id);
-        this._deleteSessionFile(id);
+        await this._deleteSessionFile(id);
         removed++;
       }
     }
@@ -74,6 +83,7 @@ class Pipeline {
   }
 
   async runFullPipeline(query, sessionId) {
+    await this._ready;
     this.cleanupExpiredSessions();
     console.log(`[Pipeline] Starting full pipeline for: "${query}"`);
 
@@ -101,11 +111,12 @@ class Pipeline {
     };
 
     this.sessions.set(sessionId, session);
-    this._saveSession(session);
+    await this._saveSession(session);
     return session;
   }
 
   async generateDocument(sessionId, documentType) {
+    await this._ready;
     const session = this.sessions.get(sessionId);
     if (!session) {
       throw new Error('Session not found');
@@ -121,7 +132,7 @@ class Pipeline {
     );
 
     session.outputResult = outputResult;
-    this._saveSession(session);
+    await this._saveSession(session);
     return outputResult;
   }
 
@@ -136,12 +147,13 @@ class Pipeline {
     }
   }
 
-  getSession(sessionId) {
+  async getSession(sessionId) {
+    await this._ready;
     this._validateSessionId(sessionId);
     const session = this.sessions.get(sessionId);
     if (session && Date.now() - new Date(session.createdAt).getTime() > config.session.ttl) {
       this.sessions.delete(sessionId);
-      this._deleteSessionFile(sessionId);
+      await this._deleteSessionFile(sessionId);
       return undefined;
     }
     return session;

@@ -31,11 +31,17 @@ async function execute(inputResult) {
 
     const context = items.map(i => `- ${i.title}`).join('\n');
 
-    const [rca, mece, impact] = await Promise.all([
+    const settled = await Promise.allSettled([
       analyzeRootCause(problem, context),
       structureMECE(problem, items.slice(0, 5)),
       calculateImpact(problem, context)
     ]);
+    const [rca, mece, impact] = settled.map(r =>
+      r.status === 'fulfilled' ? r.value : null
+    );
+    for (const r of settled) {
+      if (r.status === 'rejected') console.warn('[Analysis Agent] Partial failure:', r.reason?.message);
+    }
 
     analyses.push({
       id: `P${analyses.length + 1}`,
